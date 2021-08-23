@@ -302,6 +302,8 @@
 
 	<script>
 		/////////////////////////////////////////////////////////////////////
+		//// design and developement (C) Narayana Adisasmito-Smith, 2021 ////
+		/////////////////////////////////////////////////////////////////////
 
 		//// ENV SETUP ////
 
@@ -337,11 +339,11 @@
 					e.preventDefault();
 					searchSettings.elem.blur();
 					searchSettings.suggestionsElem.style.display = 'none';
-					console.log('defocused search');
+					//console.log('defocused search');
 					break;
 				case 9: // prevent [Tab] from leaving search box
 					e.preventDefault();
-					console.log('blocked tab-out');
+					//console.log('blocked tab-out');
 					break;
 				case 13: // prevent [Enter] from trying to submit page
 					e.preventDefault();
@@ -372,12 +374,12 @@
 		//// DISPLAY ////
 
 		function reloadSearch(container, searchFrag) {
-			console.log(searchFrag);
+			//console.log(searchFrag);
 
 			container.innerHTML = '';
 
 			let suggestions = dictionary_en_ch.searchFragment(searchFrag);
-			console.log(suggestions);
+			//console.log(suggestions);
 			if (suggestions.length > 0) {
 				for (let suggestion of suggestions) {
 					let entry = dictionary_en_ch.searchWord(suggestion);
@@ -400,7 +402,7 @@
 		}
 		function displayEntry(container, word) {
 			let entry = dictionary_en_ch.searchWord(word);
-			console.log(entry);
+			//console.log(entry);
 
 			container.innerHTML = '';
 
@@ -473,25 +475,25 @@
 				imageBox.id = 'imageBox';
 				let foundImage = false;
 				for (let form of entry.sForms) {
-					console.log('image check: ' + form.word);
+					//console.log('image check: ' + form.word);
 					if (image_en_ch.indexOf(form.word + '.jpg') != -1) {
 						imageBox.innerHTML = '<img src="source/' + form.word + '.jpg" width="200">';
 						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.jpg")';
-						console.log('found "' + form.word + '.jpg"');
+						//console.log('found "' + form.word + '.jpg"');
 						foundImage = true;
 						break;
 					}
 					if (image_en_ch.indexOf(form.word + '.png') != -1) {
 						imageBox.innerHTML = '<img src="source/' + form.word + '.png" width="200">';
 						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.png")';
-						console.log('found "' + form.word + '.png"');
+						//console.log('found "' + form.word + '.png"');
 						foundImage = true;
 						break;
 					}
 				}
 				if (!foundImage) {
 					imageBox.innerHTML = '<img src="source/404.png" width="200">';
-					console.log('no image found');
+					//console.log('no image found');
 				}
 			container.appendChild(imageBox);
 			// example sentences
