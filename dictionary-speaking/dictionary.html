@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset = 'utf-8'>
+	<title>Chukchansi-English Dictionary</title>
+	<style>
+		* {
+			margin: 0px;
+			padding: 0px;
+			font-family: 'Times New Roman';
+		}	
+		body {
+			background-color: #000000;
+			overflow: hidden;
+		}
+		
+		/* header bar */
+		#navBar {
+			background-color: #461220;
+
+			box-sizing: border-box;
+			position: sticky;
+			padding: 10px;
+			top: 0px;
+			width: 100%;
+			height: 50px;
+
+			border-bottom: 1px solid #ffffff;
+		}
+		#pageTitle {
+			color: #ffdab3;
+
+			position: absolute;
+			/*margin: 10px;*/
+			left: 50%;
+
+			transform: translate(-50%, 0%);
+
+			font-size: 25px;
+		}
+
+		/* left panel search box */
+		#searchPanel {
+			background-color: #f2e3d3;
+
+			position: absolute;
+			top: 50px;
+			width: 25%;
+			height: 46px;
+
+			border-bottom: 4px solid #4f3a09;
+		}
+		#searchBar {
+			color: #75544b;
+			background-color: #ffffff;
+
+			margin: 8px;
+			padding: 0px 15px;
+			width: calc(25vw - 46px);
+			height: 30px;
+
+			border: 1px solid #bfa07e;
+			border-radius: 30px;
+
+			font-size: 20px;
+		}
+
+		/* left panel search results */
+		#resultPanel {
+			background-color: #bfa07e;
+			/*background-color: #f2e3d3;*/
+
+			box-sizing: border-box;
+			position: absolute;
+			/*padding: 1px;*/
+			top: 100px;
+			width: 25%;
+			height: calc(100% - 100px);
+
+			overflow: scroll;
+			-ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+			scrollbar-width: none;  /* Hide scrollbar for Firefox */
+		}
+		#resultPanel::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome, Safari and Opera */
+		.searchResult {
+			cursor: pointer;
+			
+			color: #4f3a09;
+			background-color: #f2e3d3;
+
+			margin: 4px;
+			padding: 2px 10px;
+			height: 20px;
+
+			font-size: 16px;
+
+			overflow: hidden;
+			border: 2px solid #75544b;
+			border-radius: 4px;
+		}
+		.searchResultText {
+			/*font-weight: bold;*/
+		}
+		.searchResultTranslationText {
+			margin-left: 20px;
+		}
+		.noResultsText {
+			color: #75544b;
+
+			box-sizing: border-box;
+			display: inline-block;
+			position: relative;
+			margin: 10px;
+			left: 50%;
+			transform: translate(-50%, 0%);
+
+			font-size: 20px;
+			/*font-style: italic;*/
+		}
+
+		/* right panel */
+		#contentPanel {
+			background-color: #f2e3d3;
+			
+			box-sizing: border-box;
+			position: absolute;
+			padding: 20px;
+			top: 50px;
+			left: 25%;
+			width: 75%;
+			height: calc(100% - 50px);
+
+			border-left: 4px solid #4f3a09;
+
+			overflow: scroll;
+			-ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+			scrollbar-width: none;  /* Hide scrollbar for Firefox */
+		}
+		#contentPanel::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome, Safari and Opera */
+
+		/* right panel title bar */
+		#entryTitle {
+			color: #4f3a09;
+
+			display: block;
+			padding: 5px;
+			height: 50px;
+		}
+		.entryTitleText {
+			margin-right: 10px;
+			font-size: 40px;
+			font-weight: bold;
+		}
+		.entryCatgText {
+			margin-right: 10px;
+			font-size: 18px;
+			font-style: italic;
+		}
+		.entryTranslationText {
+			font-size: 30px;
+		}
+
+		/* right panel data */
+		#entryData {
+			color: #4f3a09;
+
+			display: block;
+			margin-top: 5px;
+			/*height: 200px;*/
+		}
+		.dataRow {
+			display: block;
+			margin-left: 40px;
+			padding: 5px;
+			height: 30px;
+		}
+		.dataHeader {
+			font-size: 20px;
+			/*font-weight: bold;*/
+			text-decoration: underline;
+		}
+		.formName {
+			font-size: 20px;
+			font-weight: bold;
+		}
+		.formWord {
+			margin-left: 10px;
+			font-size: 20px;
+		}
+		.soundFileIcon {
+			cursor: pointer;
+			
+			/*background-color: #ffffff;*/
+			background: url('source/audio.png');
+			background-size: contain;
+
+			display: inline-block;
+			width: 30px;
+			height: 30px;
+
+			/*border: 1px solid #000000;*/
+		}
+		.soundFileName {
+			display: inline-block;
+			position: relative;
+			margin-left: 10px;
+			top: 5px;
+
+			font-size: 20px;
+			font-weight: bold;
+
+			vertical-align: top;
+		}
+		.soundFileSpeaker {
+			/*color: #bfa07e;*/
+
+			display: inline-block;
+			position: relative;
+			margin-left: 10px;
+			top: 7px;
+
+			font-size: 16px;
+
+			vertical-align: top;
+		}
+
+		/* right panel floating image */
+		#imageBox {
+			background-color: #bfa07e;
+			background-size: 100%;
+
+			box-sizing: border-box;
+			display: inline-block;
+			position: absolute;
+			top: 80px;
+			left: 100%;
+			width: 200px;
+			height: auto;
+
+			overflow: hidden;
+			border: 2px solid #75544b;
+			border-radius: 4px;
+			transform: translate(calc(-100% - 20px), 0%);
+		}
+
+		/* right panel example sentences */
+		#entrySentences {
+			color: #4f3a09;
+			/*background-color: #bfa07e;*/
+			background-color: #dbb78f;
+
+			display: block;
+			margin-top: 20px;
+			padding: 2px 10px;
+
+			border: 2px solid #75544b;
+			border-radius: 4px;
+		}
+		.entrySentence {
+			display: block;
+			margin: 10px;
+		}
+		.entrySentenceText {
+			font-size: 20px;
+		}
+		.entrySentenceTranslation {
+			margin-left: 10px;
+			font-size: 20px;
+			font-style: italic;
+		}
+
+		/* right panel synonyms */
+		#synonyms {
+			color: #4f3a09;
+
+			display: block;
+			margin-top: 5px;
+			padding: 2px;
+
+			font-size: 16px;
+		}
+		.synonym {
+			cursor: pointer;
+
+			display: inline-block;
+			margin-left: 10px;
+
+			font-weight: bold;
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- create loading screen -->
+
+	<!-- load dependencies -->
+	<script type='text/javascript' src='script/dictionary.js'></script>
+	<script type='text/javascript' src='script/en-ch.js'></script>
+
+	<script>
+		/////////////////////////////////////////////////////////////////////
+
+		//// ENV SETUP ////
+
+		// debug
+		let t1 = Date.now();
+		// settings
+		let langToggle = false;
+		let searchSettings = {
+			shiftDown: false,
+			elem: undefined
+		};
+		let soundSettings = {
+			player: document.createElement('audio'),
+			speakerAbbreviations: ['H',           'J'         ],
+			speakerNames:         ['Holly Wyatt', 'Jane Wyatt']
+		};
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// CORE ////
+
+		function capitalize(s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
+
+		function playSound(filename) {
+			soundSettings.player.pause();
+			soundSettings.player.src = 'source/' + filename;
+			soundSettings.player.play();
+		}
+
+		function keydown_search(e) {
+			switch (e.keyCode) {
+				case 27: // [Esc] to defocus search box
+					e.preventDefault();
+					searchSettings.elem.blur();
+					searchSettings.suggestionsElem.style.display = 'none';
+					console.log('defocused search');
+					break;
+				case 9: // prevent [Tab] from leaving search box
+					e.preventDefault();
+					console.log('blocked tab-out');
+					break;
+				case 13: // prevent [Enter] from trying to submit page
+					e.preventDefault();
+					break;
+				case 16: // manually track [Shift] for [?] detection
+					searchSettings.shiftDown = true;
+					break;
+				case 191: // change [?] to [ʔ]
+					if (searchSettings.shiftDown) {
+						e.preventDefault();
+						searchSettings.elem.value += 'ʔ';
+					}
+					break;
+			}
+		}
+		function keyup_search(e) {
+			switch (e.keyCode) {
+				case 16: // manually track [Shift] for [?] detection
+					searchSettings.shiftDown = false;
+					break;
+			}
+			// run fragment search on searchbar update
+			reloadSearch(resultPanel, searchSettings.elem.value);
+		}
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// DISPLAY ////
+
+		function reloadSearch(container, searchFrag) {
+			console.log(searchFrag);
+
+			container.innerHTML = '';
+
+			let suggestions = dictionary_en_ch.searchFragment(searchFrag);
+			console.log(suggestions);
+			if (suggestions.length > 0) {
+				for (let suggestion of suggestions) {
+					let entry = dictionary_en_ch.searchWord(suggestion);
+					let e = document.createElement('div');
+						e.classList.add('searchResult');
+						e.innerHTML =
+							// '<p class="searchResultText">'
+							'<p>'
+							+ '<span class="searchResultText">' + suggestion + '</span>'
+							// + '<span class="searchResultTranslationText">' + ( entry.sForm('standard').word || (entry.sForm('subject').word+', '+entry.sForm('object').word) ) + '</span>'
+							+ '</p>';
+						e.onclick = function() {
+							displayEntry(contentPanel, suggestion);
+						}
+					container.appendChild(e);
+				}
+			} else {
+				container.innerHTML = '<p class="noResultsText">No results...</p>';
+			}
+		}
+		function displayEntry(container, word) {
+			let entry = dictionary_en_ch.searchWord(word);
+			console.log(entry);
+
+			container.innerHTML = '';
+
+			// title bar
+			let title = document.createElement('div');
+				title.id = 'entryTitle';
+				title.innerHTML = 
+						'<p>'
+						+ '<span class="entryTitleText">' + word + '</span>'
+						+ '<span class="entryCatgText">' + entry.catg + '</span>'
+						+ '<span class="entryTranslationText">' + ( entry.sForm('standard').word || (entry.sForm('subject').word+', '+entry.sForm('object').word) ) + '</span>'
+						+ '</p>';
+			container.appendChild(title);
+			// entry data
+			let data = document.createElement('div');
+				data.id = 'entryData';
+				// additional forms
+				let formString = '';
+				if (entry.sForms.length > 0) {
+					formString += '<span class="dataRow">';
+					formString += '<span class="dataHeader">FORMS</span>';
+					formString += '</span>';
+				}
+				for (let form of entry.sForms) {
+					// skip first 2 forms; they're always displayed already
+					if (form.name == 'subject' || form.name == 'object' || form.name == 'standard' || form.name == 'form0' || form.name == 'form1') { continue; }
+					// formString
+					formString += '<span class="dataRow">';
+					formString += '<span class="formName">' + capitalize(form.name) + ':</span>';
+					formString += '<span class="formWord">' + form.word + '</span>';
+					formString += '</span>';
+				}
+				// audio
+				let audioString = '';
+				let filenames = [];
+				let soundFiles = [];
+				for (let form of entry.sForms) {
+					for (let speaker of soundSettings.speakerAbbreviations) {
+						let filename = form.word + '_' + speaker + '.mp3';
+						if (audio_en_ch.indexOf(filename) != -1 && filenames.indexOf(filename) == -1) {
+							filenames.push(filename);
+							soundFiles.push({
+								word: form.word,
+								filename: filename,
+								speaker: soundSettings.speakerNames[soundSettings.speakerAbbreviations.indexOf(speaker)]
+							});
+						}
+					}
+				}
+				let spacingString = '';
+				if (entry.sForms.length > 0 && soundFiles.length > 0) {
+					spacingString += '<br>';
+				}
+				if (soundFiles.length > 0) {
+					audioString += '<span class="dataRow">';
+					audioString += '<span class="dataHeader">EXAMPLES</span>';
+					audioString += '</span>';
+				}
+				for (let soundFile of soundFiles) {
+					audioString += '<span class="dataRow">';
+					audioString += '<div class="soundFileIcon" onclick="playSound(`' + soundFile.filename + '`)"></div>';
+					audioString += '<span class="soundFileName">' + soundFile.word + '</span>';
+					audioString += '<span class="soundFileSpeaker">(Spoken by ' + soundFile.speaker + ')</span>';
+					audioString += '</span>';
+				}
+			data.innerHTML = formString + spacingString + audioString;
+			container.appendChild(data);
+			// image
+			let imageBox = document.createElement('div');
+				imageBox.id = 'imageBox';
+				let foundImage = false;
+				for (let form of entry.sForms) {
+					console.log('image check: ' + form.word);
+					if (image_en_ch.indexOf(form.word + '.jpg') != -1) {
+						imageBox.innerHTML = '<img src="source/' + form.word + '.jpg" width="200">';
+						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.jpg")';
+						console.log('found "' + form.word + '.jpg"');
+						foundImage = true;
+						break;
+					}
+					if (image_en_ch.indexOf(form.word + '.png') != -1) {
+						imageBox.innerHTML = '<img src="source/' + form.word + '.png" width="200">';
+						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.png")';
+						console.log('found "' + form.word + '.png"');
+						foundImage = true;
+						break;
+					}
+				}
+				if (!foundImage) {
+					imageBox.innerHTML = '<img src="source/404.png" width="200">';
+					console.log('no image found');
+				}
+			container.appendChild(imageBox);
+			// example sentences
+			let sentences = document.createElement('div');
+				sentences.id = 'entrySentences';
+				let sentencesString = '';
+				sentencesString += '<p>';
+				for (let sentence of entry.sentences) {
+					sentencesString += '<span class="entrySentence">';
+					sentencesString += '<span class="entrySentenceText">' + sentence.p + '</span>';
+					sentencesString += '<span class="entrySentenceTranslation">' + sentence.s + '</span>';
+					sentencesString += '</span>';
+				}
+				if (entry.sentences.length == 0) {
+					sentencesString += '<span class="entrySentenceText">[[ no example sentences ]]</span>';
+				}
+				sentencesString += '</p>';
+				sentences.innerHTML = sentencesString;
+			container.appendChild(sentences);
+			// synonyms
+			let synonymsToShow = [];
+			for (let form of entry.pForms) {
+				if (form.word != word && synonymsToShow.indexOf(form.word) == -1) {
+					synonymsToShow.push(form.word);
+				}
+			}
+			if (synonymsToShow.length > 0) {
+				synonymsToShow.sort();
+				let synonyms = document.createElement('div');
+					synonyms.id = 'synonyms';
+					let synonymsString = '';
+					synonymsString += 'Synonymous with:';
+					for (let synonym of synonymsToShow) {
+						synonymsString += '<span class="synonym" onclick="displayEntry(contentPanel, `' + synonym + '`)">' + synonym + '</span>';
+					}
+					synonyms.innerHTML = synonymsString;
+				container.appendChild(synonyms);
+			}
+				
+		}
+
+		function init(dictionary) {
+			// add containers
+			let navBar = document.createElement('div');
+				navBar.id = 'navBar';
+				navBar.innerHTML = '<span id="pageTitle">Chukchansi-English Dictionary</span>';
+			document.body.appendChild(navBar);
+			let searchPanel = document.createElement('div');
+				searchPanel.id = 'searchPanel';
+			document.body.appendChild(searchPanel);
+			let resultPanel = document.createElement('div');
+				resultPanel.id = 'resultPanel';
+			document.body.appendChild(resultPanel);
+			let contentPanel = document.createElement('div');
+				contentPanel.id = 'contentPanel';
+			document.body.appendChild(contentPanel);
+			// initial search
+			let search = document.createElement('input');
+				search.setAttribute('type', 'text');
+				search.id = 'searchBar';
+				search.placeholder = 'Search...';
+				search.value = '';
+			searchPanel.appendChild(search);
+			searchSettings.elem = search;
+			reloadSearch(resultPanel, '');
+			// implement search logic
+			search.addEventListener('keydown', keydown_search);
+			search.addEventListener('keyup', keyup_search);
+
+			// mock entry for debug
+			displayEntry(contentPanel, 'blackberry');
+		}
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// INIT ////
+
+		init(dictionary_en_ch);
+		console.log('Load time: ' + (Date.now() - t1) + ' ms');
+
+		/////////////////////////////////////////////////////////////////////
+	</script>
+
+</body>
+
+</html>
