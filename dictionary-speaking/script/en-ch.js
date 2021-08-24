@@ -14,8 +14,8 @@ let secondary_chk = {
 	alphabet: `AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzʔ'`
 };
 let forms_chk = {
-	'n': ['subject', 'object', 'possessive',     'possessed', 'instrumental', 'locative'],
-	'v': ['subject', 'object', 'yesterday past', 'ongoing',   'command',      'hypothetical', 'future']
+	'n': ['subject', 'object', 'owner',          'owned',   'tool',    'place'],
+	'v': ['subject', 'object', 'yesterday past', 'ongoing', 'command', 'hypothetical', 'future']
 };
 function parse_en_ch(tsv) {
 	let r = [],
