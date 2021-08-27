@@ -221,6 +221,9 @@
 			let card = deck.cards[cardIndex];
 			let elemStr = '';
 
+			// reset flipping (new card always face up)
+			flipped = false;
+
 			// dynamic font sizing
 			let fontSize;
 			let test = document.createElement('div');
