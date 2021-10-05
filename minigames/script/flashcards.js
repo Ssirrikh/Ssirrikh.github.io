@@ -62,3 +62,14 @@ let decks = [];
 	decks.push(new Deck('Colors', tsv_colors));
 
 let testDeck = new Deck('Intro Vocabulary', tsv_vocab_1);
+
+decks.push(new Deck(
+`Days of the Week`,
+`Monday	Luunas
+Tuesday	Boneeyanaw
+Wednesday	Shopeeyanaw
+Thursday	Hadeebanaw
+Friday	Yet'eeshanaw
+Saturday	Sawaadanaw
+Sunday	Dominkanaw`
+));
