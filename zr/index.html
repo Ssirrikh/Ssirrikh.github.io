@@ -12,56 +12,49 @@
 			font-family: 'Times New Roman';
 		}	
 		body {
-			background-color: #dddddd;
+			background-color: #eeeeee;
 			overflow: hidden;
 		}
 		
 		/* left panel */
 		#profileBar {
-			background-color: #a81c0a;
+			background-color: #dd44dd;
 
 			position: absolute;
 			width: 30%;
 			height: 80px;
 		}
-			#profilePicture {
-				background-color: #ffffff;
-
-				display:  inline-block;
-				position: absolute;
-				top: 20px;
-				left: 20px;
-				width: 40px;
-				height: 40px;
-
-				border-radius: 50%;
-			}
 			#profileName {
+				color:  #000000;
+
 				display:  inline-block;
 				position:  absolute;
 				top: 50%;
-				left: 80px;
+				left: 20px;
 				width: calc(100% - 160px);
 				transform:  translate(0%, -50%);
 
 				font: 24px Calibri;
 			}
 			#settingsButton {
-				background: url('source/edit.png');
-				background-color: #ff000022;
-				background-position: center;
-				background-size: 60%;
-				background-repeat: no-repeat;
+				background-color: #ee88ee;
 
 				display:  inline-block;
 				position: absolute;
 				top: 20px;
 				right: 20px;
-				width: 40px;
+				width: 120px;
 				height: 40px;
 
 				border: 2px solid #000000;
-				border-radius: 50%;
+				border-radius: 12px;
+			}
+			#settingsButtonText {
+				display:  inline-block;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%,-50%);
 			}
 		#selectionBar {
 			/*background-color: #ff0000;*/
@@ -78,7 +71,7 @@
 				display:  inline-block;
 				position: absolute;
 				left: 0%;
-				width:  33.33%;
+				width: 33.33%;
 				height: 40px;
 
 				border: 2px solid #888888;
@@ -119,7 +112,7 @@
 				transform: translate(-50%, -50%);
 			}
 		#miniView {
-			background-color: #dddddd;
+			background-color: #eeeeee;
 
 			position: absolute;
 			padding: 15px;
@@ -134,7 +127,7 @@
 		}
 			#miniViewFade {
 				/*background: linear-gradient(180deg, rgba(64,49,45,1) 0%, rgba(64,49,45,0) 100%);*/
-				background: linear-gradient(180deg, #ddddddff 0%, #dddddd00 100%);
+				background: linear-gradient(180deg, #eeeeeeff 0%, #eeeeee00 100%);
 
 				position: absolute;
 				top: 140px;
@@ -143,37 +136,59 @@
 				z-index: 2;
 			}
 		.miniProfile {
-			background-color: #ffffff;
-
 			display: block;
 			position: relative;
 			height: 60px;
 			margin-bottom: 10px;
-
-			border: 2px solid #000000;
-			border-radius: 12px;
 		}
-			.miniProfilePicture {
-				background-color: #dddddd;
+			.miniProfileActive {
+				background-color: #dd44dd;
 
 				display: inline-block;
 				position: absolute;
-				top: 3px;
-				left: 3px;
-				width: 50px;
-				height: 50px;
+				left: 0px;
+				width: 4px;
+				height: 100%;
 
-				border-radius: 50%;
+				opacity: 0;
 			}
-			.miniProfilePreference {
+			.miniProfileFrameLeft {
+				background-color: #000000;
+
+				display: inline-block;
+				position: absolute;
+				left: 8px;
+				width: 2px;
+				height: 100%;
+			}
+			.miniProfileFrameTop {
+				background: linear-gradient(90deg, #000000ff, #00000000);
+
+				display: inline-block;
+				position: absolute;
+				left: 8px;
+				width: calc(100% - 8px);
+				height: 2px;
+			}
+			.miniProfileFrameBottom {
+				background: linear-gradient(90deg, #000000ff, #00000000);
+
+				display: inline-block;
+				position: absolute;
+				left: 8px;
+				bottom: 0px;
+				width: calc(50% - 8px);
+				height: 2px;
+			}
+			.miniProfilePicture {
 				background-color: #bbbbbb;
 
 				display: inline-block;
 				position: absolute;
-				top: 35px;
-				left: 35px;
-				width: 20px;
-				height: 20px;
+				top: 9px;
+				left: 17px;
+				width: 45px;
+				height: 45px;
 
 				border-radius: 50%;
 			}
@@ -181,7 +196,7 @@
 				display: inline-block;
 				position: absolute;
 				top: 8px;
-				left: 60px;
+				left: 70px;
 
 				font-weight: bold;
 				font-size: 20px;
@@ -190,12 +205,12 @@
 				display: inline-block;
 				position: absolute;
 				top: 30px;
-				left: 60px;
+				left: 70px;
 			}
 
 		/* right panel */
 		#fullView {
-			background-color: #eeeeee;
+			background-color: #ffffff;
 
 			position: absolute;
 			padding: 10px;
@@ -231,66 +246,62 @@
 				display: inline-block;
 				position: absolute;
 				top: 80px;
-				left: 50%;
+				left: 10%;
 				width: 120px;
 				height: 120px;
 				transform: translate(-50%,0%);
 
 				border-radius: 50%;
 			}
-			#fullProfilePreference {
-				background-color: #bbbbbb;
-
-				display: inline-block;
-				position: absolute;
-				top: 150px;
-				left: 50%;
-				width: 45px;
-				height: 45px;
-				transform: translate(calc(-50% + 50px), 0%);
-
-				border-radius: 50%;
-			}
 			#fullProfileName {
 				display: inline-block;
 				position: absolute;
-				top: 210px;
-				left: 50%;
-				transform: translate(-50%,0%);
+				top: 100px;
+				left: calc(10% + 100px);
 
 				font-weight: bold;
-				font-size: 20px;
+				font-size: 30px;
 			}
 			#fullProfileText {
 				display: inline-block;
 				position: absolute;
-				top: 240px;
-				left: 50%;
-				transform: translate(-50%,0%);
+				top: 150px;
+				left: calc(10% + 100px);
+
+				font-size: 20px;
+				white-space: pre;
 			}
-			#personalityPreferences {
-				background-color: #dddddd;
+			.infoPanel {
+				background-color: #ffffffdd;
 
 				display: inline-block;
 				position: absolute;
+				width: 40%;
+				height: 300px;
+				padding: 8px;
+
+				border: 2px solid #dd44dd;
+				border-radius: 12px;
+			}
+			#bioPanel {
 				top: 300px;
 				right: calc(50% + 60px);
-				width: 40%;
-				height: 700px;
-
-				border-radius: 12px;
 			}
-			#housingPreferences {
-				background-color: #dddddd;
-
-				display: inline-block;
-				position: absolute;
-				top: 300px;
+			#extraInfoPanel {
+				top: 400px;
 				left: calc(50% + 60px);
-				width: 40%;
-				height: 700px;
-
-				border-radius: 12px;
+			}
+			#contactPanel {
+				top: 250px;
+				left: calc(50% + 10px);
+				width: 20%;
+				height: 60px;
+			}
+			#areaPanel {
+				top: 150px;
+				left: calc(100% - 270px);
+				width: 200px;
+				height: 35px;
 			}
 			#email {
 				display: inline-block;
@@ -306,18 +317,25 @@
 				left: calc(50% - 250px);
 				transform: translate(-50%,0%);
 			}
-			.picture {
-				background-color: #dddddd;
+			.decorativePanelLarge {
+				background-color: #dd44dd;
 
 				display: inline-block;
 				position: absolute;
-				top: 150px;
-				left: calc(50% + 250px);
-				width: 50px;
-				height: 50px;
+				width: 20%;
+				height: 25%;
 
-				border: 2px solid #888888;
-				border-radius: 12px;
+				border-radius: 24px;
+			}
+			.decorativePanelSmall {
+				background-color: #dd44dd;
+
+				display: inline-block;
+				position: absolute;
+				width: 100px;
+				height: 100px;
+
+				border-radius: 24px;
 			}
 
 		/* settings */
@@ -380,9 +398,10 @@
 <body>
 
 	<div id='profileBar'>
-		<div id='profilePicture'></div>
-		<p id='profileName'>Firstname Lastname</p>
-		<div id='settingsButton' onclick='toggleSettings(true)'></div>
+		<p id='profileName'>Hodor Hodorson</p>
+		<div id='settingsButton' onclick='toggleSettings(true)'>
+			<p id='settingsButtonText'>Settings</p>
+		</div>
 	</div>
 	<div id='selectionBar'>
 		<div id='selectionLeft' onclick='setSelection(0)'><p id='selectionLabelLeft' class='selectionLabel' style='font-weight: bold; font-size: 16px; border-bottom: 3px solid #ff0000; color: #000000;'>My List</p></div>
@@ -423,7 +442,7 @@
 
 		let firstnames = ['John', 'Joe', 'Katie', 'Lauren', 'Mariana', 'Katniss', 'Peter', 'Tyler', 'Tara', 'Ezekiel'];
 		let lastnames = ['Smith', 'Cooper', 'Westfield', 'Everdeen', 'Rennel', 'Miller', 'Steinbech', 'Reinhardt'];
-		let personalities = ['extrovert, party-lover | 2-bedroom, urban', 'introvert, gamer | 2-bedroom, suburban', 'introvert, bookworm | 2-bedroom, urban', 'extrovert, foodie | bunk beds, urban'];
+		let personalities = ['extrovert, intuit', 'introvert, feeling', 'introvert', 'extrovert'];
 		let profiles = [];
 		for (let i = 0; i < 30; i++) {
 			profiles.push({
@@ -439,8 +458,11 @@
 			for (let j = 0; j < 10; j++) {
 				let profileIndex = randInt(0, profiles.length-1);
 				contentStr += '<div id="elem' + j + '" class="miniProfile" onclick="loadProfile(' + j + ',' + profileIndex + ')">'
+					contentStr += '<div id="active' + j + '" class="miniProfileActive"></div>';
+					contentStr += '<div class="miniProfileFrameLeft"></div>';
+					contentStr += '<div class="miniProfileFrameTop"></div>';
+					contentStr += '<div class="miniProfileFrameBottom"></div>';
 					contentStr += '<div class="miniProfilePicture"></div>';
-					contentStr += '<div class="miniProfilePreference"></div>';
 					contentStr += '<p class="miniProfileName">' + profiles[profileIndex].firstname + ' '  + profiles[profileIndex].lastname + '</p>';
 					contentStr += '<p class="miniProfileText">' + profiles[profileIndex].personality + '</p>';
 				contentStr += '</div>';
@@ -453,7 +475,7 @@
 				if (i == n) {
 					selections[i].container.style.backgroundColor = '#ffffff';
 					selections[i].label.style.color = '#000000';
-					selections[i].label.style.borderBottom = '3px solid #ff0000';
+					selections[i].label.style.borderBottom = '3px solid #dd44dd';
 					selections[i].label.style.fontWeight = 'bold';
 				} else {
 					selections[i].container.style.backgroundColor = '#eeeeee';
@@ -463,28 +485,34 @@
 				}
 			}
 			miniView.innerHTML = contents[n];
+			loadProfile(0,0);
 		}
 		setSelection(0);
 
 		function loadProfile(elemNum, profileIndex) {
 			for (let i = 0; i < 10; i++) {
 				let elem = document.getElementById('elem'+i);
-				elem.style.transform = (i==elemNum) ? 'translateX(13px)' : '';
+				elem.style.transform = (i==elemNum) ? 'translateX(8px)' : '';
 				elem.style.borderWidth = (i==elemNum) ? '3px' : '2px';
+				let active = document.getElementById('active'+i);
+				active.style.opacity = (i==elemNum) ? '1' : '0';
 			}
 
 			contentStr = '';
+			// decoration
+			contentStr += '<div class="decorativePanelLarge" style="top: 550px; left:20%;"></div>';
+			contentStr += '<div class="decorativePanelLarge" style="top: 50px; right:15%;"></div>';
+			contentStr += '<div class="decorativePanelSmall" style="top: 70px; left:40%;"></div>';
+			contentStr += '<div class="decorativePanelSmall" style="top: 650px; right:20%;"></div>';
+			// content
 			contentStr += '<div id="fullProfilePicture"></div>';
 			contentStr += '<div id="fullProfilePreference"></div>';
 			contentStr += '<p id="fullProfileName">' + profiles[profileIndex].firstname + ' '  + profiles[profileIndex].lastname + '</p>';
-			contentStr += '<p id="fullProfileText">' + profiles[profileIndex].personality + '</p>';
-			contentStr += '<div id="personalityPreferences">[personality: self-desc + roommate prefs]</div>';
-			contentStr += '<div id="housingPreferences">[housing: prefs + current residence if applicable]</div>';
-			contentStr += '<p id="email">example@email.com</p>';
-			contentStr += '<p id="phone">123-456-7890</p>';
-			for (let i = -1; i <= 1; i++) {
-				contentStr += '<div class="picture" style="transform: translate(' + (i*20) + 'px,' + (i*3) + 'px);"></div>';
-			}
+			contentStr += '<p id="fullProfileText">' + profiles[profileIndex].personality + '\nbasketball, cooking</p>';
+			contentStr += '<div id="bioPanel" class="infoPanel"><p style="margin-bottom: 4px;"><b><u>Biography:</u></b></p><p>My bio here.</p></div>';
+			contentStr += '<div id="extraInfoPanel" class="infoPanel"><p style="margin-bottom: 4px;"><b><u>Additional Info:</u></b></p><p>More about me.</p></div>';
+			contentStr += '<div id="contactPanel" class="infoPanel"><p style="margin-bottom: 4px;"><b><u>Contact Me:</u></b></p><p>example@email.com</p></div>';
+			contentStr += '<div id="areaPanel" class="infoPanel"><p style="margin-bottom: 4px;">I am from <b>Los Angeles</b>!</p></div>';
 			fullView.innerHTML = contentStr;
 		}
 		function clearProfile() {
