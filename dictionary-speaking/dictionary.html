@@ -298,11 +298,9 @@
 
 	<!-- load dependencies -->
 	<script type='text/javascript' src='script/dictionary.js'></script>
-	<script type='text/javascript' src='script/en-ch.js'></script>
+	<script type='text/javascript' src='source/data-v4.js'></script>
 
 	<script>
-		/////////////////////////////////////////////////////////////////////
-		//// design and developement (C) Narayana Adisasmito-Smith, 2021 ////
 		/////////////////////////////////////////////////////////////////////
 
 		//// ENV SETUP ////
@@ -320,6 +318,15 @@
 			speakerAbbreviations: ['H',           'J'         ],
 			speakerNames:         ['Holly Wyatt', 'Jane Wyatt']
 		};
+
+		// index resources
+		let audio_en_ch = ["baabas_H.mp3", "baabasi_H.mp3", "bokbokish_H.mp3", "bokbokshi_H.mp3", "boʔsha_H.mp3", "boʔush_H.mp3", "cheexaʔ_H.mp3", "cheexaʔan_H.mp3", "dadaach'i_H.mp3", "dadach'_H.mp3", "diwdiw_J.mp3", "gaaduʔ_H.mp3", "gaaduʔun_H.mp3", "gosneenot_H.mp3", "gosneenotaʔ_H.mp3", "heedin_H.mp3", "heedina_H.mp3", "k'otiiʔin_H.mp3", "k'ut'_H.mp3", "k'ut'a_H.mp3", "lopis_H.mp3", "lopso_H.mp3", "maamil'_H.mp3", "maamila_H.mp3", "maw'_J.mp3", "monosh_J.mp3", "peeli_H.mp3", "pel'_H.mp3", "saayiʔ_H.mp3", "saayiʔin_H.mp3", "shidgil'_J.mp3", "shoopin_H.mp3", "shoopina_H.mp3", "tew'_J.mp3", "waʔat'_H.mp3", "weheeshit_J.mp3", "woshok'_J.mp3", "xomix_J.mp3", "xoʔ_H.mp3", "xoʔo_H.mp3", "ʔach'ch'it_H.mp3", "ʔach'ich'taʔ_H.mp3", "ʔeeniʔ_H.mp3", "ʔeeniʔin_H.mp3", "ʔutuʔ_H.mp3", "ʔutuʔun_H.mp3"];
+		let image_en_ch = ["dadach'.jpg", "gaaduʔ.jpg", "galshuy.png", "gosneenot.jpg", "heedin'.jpg", "k'ut'.jpg", "lopis.jpg", "maamil'.jpg", "monosh.png", "pel'.jpg", "saayiʔ.jpg", "shidgil'.jpg", "shoopin.jpg", "weheeshit.jpg", "woshok'.png", "xomix.jpg", "xoʔ.jpg", "ʔach'ch'it.jpg", "ʔeeniʔ.jpg", "ʔutuʔ.jpg", "baabas.jpg", "bokbokish.jpg", "boʔush.jpg", "cheexaʔ.jpg"];
+
+
+		// build dictionary
+		let dictionary = new Dictionary(primary_eng, secondary_chk);
+		dictionary.loadData( parse_en_ch_v4(tsv_en_ch_v4) );
 
 		/////////////////////////////////////////////////////////////////////
 
@@ -339,11 +346,11 @@
 					e.preventDefault();
 					searchSettings.elem.blur();
 					searchSettings.suggestionsElem.style.display = 'none';
-					//console.log('defocused search');
+					console.log('defocused search');
 					break;
 				case 9: // prevent [Tab] from leaving search box
 					e.preventDefault();
-					//console.log('blocked tab-out');
+					console.log('blocked tab-out');
 					break;
 				case 13: // prevent [Enter] from trying to submit page
 					e.preventDefault();
@@ -374,86 +381,90 @@
 		//// DISPLAY ////
 
 		function reloadSearch(container, searchFrag) {
-			//console.log(searchFrag);
+			console.log(searchFrag);
 
 			container.innerHTML = '';
 
-			let suggestions = dictionary_en_ch.searchFragment(searchFrag);
-			//console.log(suggestions);
-			if (suggestions.length > 0) {
-				for (let suggestion of suggestions) {
-					let entry = dictionary_en_ch.searchWord(suggestion);
-					let e = document.createElement('div');
-						e.classList.add('searchResult');
-						e.innerHTML =
-							// '<p class="searchResultText">'
-							'<p>'
-							+ '<span class="searchResultText">' + suggestion + '</span>'
-							// + '<span class="searchResultTranslationText">' + ( entry.sForm('standard').word || (entry.sForm('subject').word+', '+entry.sForm('object').word) ) + '</span>'
-							+ '</p>';
-						e.onclick = function() {
-							displayEntry(contentPanel, suggestion);
-						}
-					container.appendChild(e);
-				}
-			} else {
+			let suggestions = dictionary.searchFragment(searchFrag);
+			console.log(suggestions);
+			if (suggestions.length == 0) {
 				container.innerHTML = '<p class="noResultsText">No results...</p>';
+				return;
+			}
+			for (let suggestion of suggestions) {
+				let entry = dictionary.searchWord(suggestion);
+				let e = document.createElement('div');
+					e.classList.add('searchResult');
+					e.innerHTML = '<p><span class="searchResultText">' + suggestion + '</span></p>';
+					e.onclick = () => {
+						displayEntry(contentPanel, suggestion);
+						console.log('clicked '+suggestion);
+					};
+				container.appendChild(e);
 			}
 		}
 		function displayEntry(container, word) {
-			let entry = dictionary_en_ch.searchWord(word);
-			//console.log(entry);
+			const entry = dictionary.searchWord(word);
+			console.log(entry);
+			const synonymID = entry.primarySynonymID(word);
 
 			container.innerHTML = '';
 
 			// title bar
+			let mainForms = [entry.getSecondaryForm(0),entry.getSecondaryForm(1)].filter((e) => e != undefined);
 			let title = document.createElement('div');
 				title.id = 'entryTitle';
 				title.innerHTML = 
 						'<p>'
 						+ '<span class="entryTitleText">' + word + '</span>'
 						+ '<span class="entryCatgText">' + entry.catg + '</span>'
-						+ '<span class="entryTranslationText">' + ( entry.sForm('standard').word || (entry.sForm('subject').word+', '+entry.sForm('object').word) ) + '</span>'
+						// + '<span class="entryTranslationText">' + ( entry.getSecondaryForm(0)+', '+entry.getSecondaryForm(1) ) + '</span>'
+						+ '<span class="entryTranslationText">' + mainForms.join(', ') + '</span>'
 						+ '</p>';
 			container.appendChild(title);
 			// entry data
 			let data = document.createElement('div');
 				data.id = 'entryData';
 				// additional forms
+				let extraForms = [];
+				entry.forEachSecondaryForm((synonyms,formNum) => {
+					if (formNum <= 1) return; // skip first 2 forms; they're displayed above
+					extraForms.push( [synonyms.join(', '), formNum] );
+				});
 				let formString = '';
-				if (entry.sForms.length > 0) {
+				if (extraForms.length > 0) {
 					formString += '<span class="dataRow">';
 					formString += '<span class="dataHeader">FORMS</span>';
 					formString += '</span>';
 				}
-				for (let form of entry.sForms) {
-					// skip first 2 forms; they're always displayed already
-					if (form.name == 'subject' || form.name == 'object' || form.name == 'standard' || form.name == 'form0' || form.name == 'form1') { continue; }
-					// formString
+				for (let i = 0; i < extraForms.length; i++) {
+					const [synonymStr, formNum] = extraForms[i];
 					formString += '<span class="dataRow">';
-					formString += '<span class="formName">' + capitalize(form.name) + ':</span>';
-					formString += '<span class="formWord">' + form.word + '</span>';
+					formString += '<span class="formName">' + capitalize(dictionary._sLang.formStr(entry.catg,formNum)) + ':</span>';
+					formString += '<span class="formWord">' + synonymStr + '</span>';
 					formString += '</span>';
 				}
 				// audio
 				let audioString = '';
 				let filenames = [];
 				let soundFiles = [];
-				for (let form of entry.sForms) {
-					for (let speaker of soundSettings.speakerAbbreviations) {
-						let filename = form.word + '_' + speaker + '.mp3';
-						if (audio_en_ch.indexOf(filename) != -1 && filenames.indexOf(filename) == -1) {
-							filenames.push(filename);
-							soundFiles.push({
-								word: form.word,
-								filename: filename,
-								speaker: soundSettings.speakerNames[soundSettings.speakerAbbreviations.indexOf(speaker)]
-							});
+				entry.forEachSecondaryForm((synonyms,formNum) => {
+					for (const synonym of synonyms) {
+						for (const speaker of soundSettings.speakerAbbreviations) {
+							const filename = synonym + '_' + speaker + '.mp3';
+							if (audio_en_ch.indexOf(filename) != -1 && filenames.indexOf(filename) == -1) {
+								filenames.push(filename);
+								soundFiles.push({
+									word: synonym,
+									filename: filename,
+									speaker: soundSettings.speakerNames[soundSettings.speakerAbbreviations.indexOf(speaker)]
+								});
+							}
 						}
 					}
-				}
+				});
 				let spacingString = '';
-				if (entry.sForms.length > 0 && soundFiles.length > 0) {
+				if (extraForms.length > 0 && soundFiles.length > 0) {
 					spacingString += '<br>';
 				}
 				if (soundFiles.length > 0) {
@@ -474,40 +485,47 @@
 			let imageBox = document.createElement('div');
 				imageBox.id = 'imageBox';
 				let foundImage = false;
-				for (let form of entry.sForms) {
-					//console.log('image check: ' + form.word);
-					if (image_en_ch.indexOf(form.word + '.jpg') != -1) {
-						imageBox.innerHTML = '<img src="source/' + form.word + '.jpg" width="200">';
-						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.jpg")';
-						//console.log('found "' + form.word + '.jpg"');
-						foundImage = true;
-						break;
+				entry.forEachSecondaryForm((synonyms,formNum) => {
+					if (foundImage) return;
+					for (const synonym of synonyms) {
+						console.log('image check: ' + synonym);
+						if (image_en_ch.indexOf(synonym + '.jpg') != -1) {
+							imageBox.innerHTML = '<img src="source/' + synonym + '.jpg" width="200" style="display:block;">'; // display:block to remove inline whitespacing
+							console.log('found "' + synonym + '.jpg"');
+							foundImage = true;
+							break;
+						}
+						if (image_en_ch.indexOf(synonym + '.png') != -1) {
+							imageBox.innerHTML = '<img src="source/' + synonym + '.png" width="200" style="display:block;">'; // display:block to remove inline whitespacing
+							console.log('found "' + synonym + '.png"');
+							foundImage = true;
+							break;
+						}
 					}
-					if (image_en_ch.indexOf(form.word + '.png') != -1) {
-						imageBox.innerHTML = '<img src="source/' + form.word + '.png" width="200">';
-						// imageBox.style.backgroundImage = 'url("source/' + form.word + '.png")';
-						//console.log('found "' + form.word + '.png"');
-						foundImage = true;
-						break;
-					}
-				}
-				if (!foundImage) {
+				});
+				if (foundImage) {
+					container.appendChild(imageBox);
+				} else {
 					imageBox.innerHTML = '<img src="source/404.png" width="200">';
-					//console.log('no image found');
+					console.log('no image found');
 				}
-			container.appendChild(imageBox);
 			// example sentences
 			let sentences = document.createElement('div');
 				sentences.id = 'entrySentences';
 				let sentencesString = '';
 				sentencesString += '<p>';
-				for (let sentence of entry.sentences) {
-					sentencesString += '<span class="entrySentence">';
-					sentencesString += '<span class="entrySentenceText">' + sentence.p + '</span>';
-					sentencesString += '<span class="entrySentenceTranslation">' + sentence.s + '</span>';
-					sentencesString += '</span>';
-				}
-				if (entry.sentences.length == 0) {
+				let foundSentence = false;
+				entry.forEachSentence((sents,formNum) => {
+					for (const sentPair of sents) {
+						foundSentence = true;
+						sentencesString += '<span class="entrySentence">';
+						sentencesString += '(' + capitalize(dictionary._sLang.formStr(entry.catg,formNum)) + ') ';
+						sentencesString += '<span class="entrySentenceText">' + sentPair.sent + '</span>';
+						sentencesString += '<span class="entrySentenceTranslation">' + sentPair.trans + '</span>';
+						sentencesString += '</span>';
+					}
+				});
+				if (!foundSentence) {
 					sentencesString += '<span class="entrySentenceText">[[ no example sentences ]]</span>';
 				}
 				sentencesString += '</p>';
@@ -515,11 +533,11 @@
 			container.appendChild(sentences);
 			// synonyms
 			let synonymsToShow = [];
-			for (let form of entry.pForms) {
-				if (form.word != word && synonymsToShow.indexOf(form.word) == -1) {
-					synonymsToShow.push(form.word);
-				}
-			}
+			entry.forEachPrimaryForm((synonyms,formNum) => {
+				for (const synonym of synonyms)
+					if (synonym != word)
+						synonymsToShow.push(synonym);
+			});
 			if (synonymsToShow.length > 0) {
 				synonymsToShow.sort();
 				let synonyms = document.createElement('div');
@@ -532,7 +550,9 @@
 					synonyms.innerHTML = synonymsString;
 				container.appendChild(synonyms);
 			}
-				
+			
+			// scroll to top, since we just clicked a new word
+			container.scroll(0,0);
 		}
 
 		function init(dictionary) {
@@ -571,7 +591,7 @@
 
 		//// INIT ////
 
-		init(dictionary_en_ch);
+		init(dictionary);
 		console.log('Load time: ' + (Date.now() - t1) + ' ms');
 
 		/////////////////////////////////////////////////////////////////////
