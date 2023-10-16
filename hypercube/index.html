@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>Hypercube Demo</title>
+	<style>
+		* { margin: 0; padding: 0; }
+		body { background: #222222; overflow: hidden; }
+		canvas { position: absolute; }
+	</style>
+</head>
+<body>
+
+<!-- import three.js -->
+<script type = 'text/javascript' src = '../three/build/three.min.js'></script>
+<script type = 'text/javascript' src = '../three/examples/js/controls/OrbitControls.js'></script>
+
+<script>
+
+//// SET UP SCENE ////
+
+const CAMERA_FOV = 50;
+const CAMERA_ASPECT = window.innerWidth / window.innerHeight;
+const CAMERA_NEAR = 0.0001;
+const CAMERA_FAR = 10000;
+
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera( CAMERA_FOV, CAMERA_ASPECT, CAMERA_NEAR, CAMERA_FAR );
+let renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} );
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+// lights
+let ambLight = new THREE.AmbientLight(0xffffff);
+ambLight.intensity = 1.0;
+scene.add(ambLight);
+// camera
+camera.position.set(2,5,7);
+camera.lookAt(0,0,0);
+camera.updateProjectionMatrix();
+// action!
+let controls = new THREE.OrbitControls(camera, document.body); // allow controls to be used from anywhere on page...
+controls.domElement = renderer.domElement; // then attach to correct renderer
+
+window.addEventListener('resize', (e) => {
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+});
+
+//// DEF OBJECTS ////
+
+function AxisVisualizer () {
+	const geo = new THREE.CylinderGeometry(0.005, 0.005, 1.0);
+	const xMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+	const yMat = new THREE.MeshBasicMaterial({color: 0x00ff00});
+	const zMat = new THREE.MeshBasicMaterial({color: 0x0000ff});
+
+	let xObj = new THREE.Mesh(geo, xMat);
+		xObj.position.x = length / 2;
+		xObj.rotateZ(Math.PI / 2);
+	let yObj = new THREE.Mesh(geo, yMat);
+		yObj.position.y = length / 2;
+	let zObj = new THREE.Mesh(geo, zMat);
+		zObj.position.z = length / 2;
+		zObj.rotateX(Math.PI/2);
+
+	this.object = new THREE.Object3D();
+
+	this.object.add(xObj);
+	this.object.add(yObj);
+	this.object.add(zObj);
+}
+
+//// POPULATE SCENE ////
+
+const origin = new AxisVisualizer();
+scene.add(origin.object);
+
+//// ANIMATE ////
+
+function render () {
+	renderer.render(scene, camera);
+	requestAnimationFrame(render);
+}
+
+render();
+
+
+
+</script>
+</body>
+</html>
