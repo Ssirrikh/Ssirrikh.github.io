@@ -74,14 +74,321 @@ function AxisVisualizer () {
 	this.object.add(zObj);
 }
 
+function nCubeData (n) {
+	const UNIT_RADIUS = 0.5;
+	const numVertices = 2**n;
+
+	function adjacent (v1,v2) {
+		// in a unit n-cube, two vertices are adjacent iff exactly one coordinate is different
+		// ex. in a square/2-cuboid: (1,1) has one diff from (-1,1) but two diffs from (-1,-1)
+		let diff = false;
+		for (let i = 0; i < n; i++) {
+			if (v1[i] == v2[i]) continue;
+			if (diff) return false; // fail if two diffs
+			diff = true;
+		}
+		return diff; // fail if no diff, pass if one diff
+	}
+
+	let vertices = [], edges = [];
+	let frontV = [], backV = [];
+	let frontE = [], backE = [];
+
+	// generate vertices
+	for (let v = 0; v < numVertices; v++) {
+		// permute n-bit binary number to get coords
+		let vertex = [];
+		for (let i = 0; i < n; i++) {
+			const secSize = 2**(n-i);
+			vertex.push( ( (v%secSize)/secSize < 0.5 ) ? -UNIT_RADIUS : UNIT_RADIUS );
+		}
+		vertices.push(vertex);
+		// label vertex as front/back wrt final coord
+		(vertex[n-1] < 0)
+			? backV.push(v)
+			: frontV.push(v);
+	}
+	// connect edges based on adjacency
+	for (let v1 = 0; v1 < numVertices; v1++) {
+        for (let v2 = v1+1; v2 < numVertices; v2++) {
+            if (adjacent(vertices[v1], vertices[v2])) {
+				// connect adjacent points
+                edges.push([v1, v2]);
+				// label edge as front/back wrt final coord
+				if (vertices[v1][n-1] != vertices[v2][n-1]) continue; // edges that connect front face to back face are left unmarked
+				(vertices[v1][n-1] < 0)
+					? backE.push(edges.length-1)
+					: frontE.push(edges.length-1);
+            }
+        }
+    }
+	
+	return {
+        vertices: vertices,
+        edges: edges,
+        frontVertices: frontV,
+        backVertices: backV,
+        frontEdges: frontE,
+        backEdges: backE
+    };
+}
+
+const vertGeo = new THREE.SphereGeometry(0.1);
+const edgeGeo = new THREE.CylinderGeometry(0.01,0.01, 1.0);
+	  edgeGeo.translate(0, 0.5, 0); // move center to bottom end of cylinder
+	  edgeGeo.rotateX(Math.PI/2);   // point top of cylinder toward +z, so it aligns with lookAt() vector
+const frontMat = new THREE.MeshBasicMaterial({color:0xff0000});
+const backMat = new THREE.MeshBasicMaterial({color:0x00ff00});
+const connectionMat = new THREE.MeshBasicMaterial({color:0xffffff});
+
+class NCube {
+	constructor (n) {
+		this.data = nCubeData(n);
+		this.vertices = [];
+		this.edges = [];
+		this.object = new THREE.Object3D();
+
+		for (let v = 0; v < this.data.vertices.length; v++) {
+			let mat = (this.data.frontVertices.indexOf(v) != -1) ? frontMat
+					: (this.data.backVertices.indexOf(v) != -1) ? backMat
+					: connectionMat;
+			let vertexWidget = new THREE.Mesh(vertGeo, mat);
+			this.vertices.push(vertexWidget);
+			this.object.add(vertexWidget);
+		}
+
+		for (let e = 0; e < this.data.edges.length; e++) {
+			let mat = (this.data.frontEdges.indexOf(e) != -1) ? frontMat
+					: (this.data.backEdges.indexOf(e) != -1) ? backMat
+					: connectionMat;
+			let edge = new THREE.Mesh(edgeGeo, mat);
+			this.edges.push(edge);
+			this.object.add(edge);
+		}
+
+		this.updateVertices();
+	}
+
+	updateVertices () {
+		for (let v = 0; v < this.vertices.length; v++) {
+			this.vertices[v].position.set(...this.data.vertices[v]);
+		}
+		for (let e = 0; e < this.edges.length; e++) {
+			let [v1,v2] = this.data.edges[e];
+			let v2World = [ // lookAt() only uses world coords, so add local offset + world offset
+				this.data.vertices[v2][0] + this.object.position.x,
+				this.data.vertices[v2][1] + this.object.position.y,
+				(this.data.vertices[v2][2] ?? 0) + this.object.position.z // z-coord -> stub 0 if 2d
+			];
+			let posDiff = [
+				this.data.vertices[v2][0] - this.data.vertices[v1][0],
+				this.data.vertices[v2][1] - this.data.vertices[v1][1],
+				(this.data.vertices[v2][2] ?? 0) - (this.data.vertices[v1][2] ?? 0)
+			];
+			let edgeLen = Math.sqrt(posDiff[0]*posDiff[0] + posDiff[1]*posDiff[1] + posDiff[2]*posDiff[2]);
+
+			this.edges[e].position.set(...this.data.vertices[v1]);
+			this.edges[e].lookAt(...v2World);
+			this.edges[e].scale.set(1,1,edgeLen);
+		}
+	}
+	rotateAbout (axis, angle) {
+		console.warn('rotateAbout() called on abstract class NCube()');
+	}
+	rotateAlong (axis, angle) {
+		console.warn('rotateAlong() called on abstract class NCube()');
+	}
+}
+class Square extends NCube {
+	constructor () {
+		super(2);
+	}
+	rotate (angle) {
+		const s = Math.sin(angle);
+		const c = Math.cos(angle);
+		for (let v = 0; v < this.data.vertices.length; v++) {
+			let [x,y] = this.data.vertices[v];
+			this.data.vertices[v] = [
+				x*c - y*s,	// x = x*cos(theta) - y*sin(theta)
+				x*s + y*c	// y = x*sin(theta) + y*cos(theta)
+			];
+		}
+		this.updateVertices();
+	}
+	rotateAbout (axis, angle) {
+		this.rotate(angle);
+	}
+	rotateAlong (axis, angle) {
+		this.rotate(angle);
+	}
+}
+class Cube extends NCube {
+	constructor () {
+		super(3);
+	}
+	rotateAbout (axis, angle) {
+		const s = Math.sin(angle);
+		const c = Math.cos(angle);
+		for (let v = 0; v < this.data.vertices.length; v++) {
+			let [x,y,z] = this.data.vertices[v];
+			switch (axis) {
+				case 'x':
+					this.data.vertices[v] = [
+						x,			// x = x
+						y*c - z*s,	// y = y*cos(theta) - z*sin(theta)
+						y*s + z*c	// z = y*sin(theta) + z*cos(theta)
+					];
+					break;
+				case 'y':
+					this.data.vertices[v] = [
+						x*c + z*s,	// x = x*cos(theta) + z*sin(theta)
+						y,			// y = y
+						-x*s + z*c	// z = -x*sin(theta) + z*cos(theta)
+					];
+					break;
+				case 'z':
+					this.data.vertices[v] = [
+						x*c - y*s,	// x = x*cos(theta) - y*sin(theta)
+						x*s + y*c,	// y = x*sin(theta) + y*cos(theta)
+						z			// z = z
+					];
+					break;
+			}
+		}
+		this.updateVertices();
+	}
+	rotateAlong (axis, angle) {
+		switch (axis) {
+			case 'xy': this.rotateAbout('z',angle); break;
+			case 'xz': this.rotateAbout('y',angle); break;
+			case 'yz': this.rotateAbout('x',angle); break;
+		}
+	}
+}
+class Tesseract extends NCube {
+	constructor () {
+		super(4);
+	}
+	rotateAbout (axis, angle) {
+		const s = Math.sin(angle);
+		const c = Math.cos(angle);
+		for (let v = 0; v < this.data.vertices.length; v++) {
+			let [x,y,z,w] = this.data.vertices[v];
+			switch (axis) {
+				case 'xy':
+					this.data.vertices[v] = [
+						x,			// x = x
+						y,			// y = y
+						z*c - w*s,	// z = z*cos(theta) - w*sin(theta)
+						z*s + w*c	// w = z*sin(theta) + w*cos(theta)
+					];
+					break;
+				case 'xz':
+					this.data.vertices[v] = [
+						x,			// x = x
+						y*c - w*s,	// y = y*cos(theta) - w*sin(theta)
+						z,			// z = z
+						y*s + w*c	// w = y*sin(theta) + w*cos(theta)
+					];
+					break;
+				case 'xw':
+					this.data.vertices[v] = [
+						x,			// x = x
+						y*c + z*s,	// y = y*cos(theta) + z*sin(theta)
+						-y*s + z*c,	// z = -y*sin(theta) + z*cos(theta)
+						w			// w = w
+					];
+					break;
+				case 'yz':
+					this.data.vertices[v] = [
+						x*c + w*s,	// x = x*cos(theta) + w*sin(theta)
+						y,			// y = y
+						z,			// z = z
+						-x*s + w*c	// w = -x*sin(theta) + w*cos(theta)
+					];
+					break;
+				case 'yw':
+					this.data.vertices[v] = [
+						x*c + z*s,	// x = x*cos(theta) + z*sin(theta)
+						y,			// y = y
+						-x*s + z*c,	// z = -x*sin(theta) + z*cos(theta)
+						w			// w = w
+					];
+					break;
+				case 'zw':
+					this.data.vertices[v] = [
+						x*c + y*s,	// x = x*cos(theta) + y*sin(theta)
+						-x*s + y*c,	// y = -x*sin(theta) + y*cos(theta)
+						z,			// z = z
+						w			// w = w
+					];
+					break;
+			}
+		}
+		this.updateVertices();
+	}
+	rotateAlong (axis, angle) {
+		switch (axis) {
+			case 'xy': this.rotateAbout('zw',angle); break;
+			case 'xz': this.rotateAbout('yw',angle); break;
+			case 'xw': this.rotateAbout('yz',angle); break;
+			case 'yz': this.rotateAbout('xw',angle); break;
+			case 'yw': this.rotateAbout('xz',angle); break;
+			case 'zw': this.rotateAbout('xy',angle); break;
+		}
+	}
+}
+
 //// POPULATE SCENE ////
 
 const origin = new AxisVisualizer();
 scene.add(origin.object);
 
+let square = new Square();
+square.object.position.set(-3,0,0);
+scene.add(square.object);
+
+let cube = new Cube();
+cube.object.position.set(0,0,0);
+scene.add(cube.object);
+
+let tess = new Tesseract();
+tess.object.position.set(3,0,0);
+scene.add(tess.object);
+
 //// ANIMATE ////
 
+let ROT_SPEED = 0.01; // in rad/frame
+
+let rotSquare = false;
+let rotCube = {
+	x : false,	// pitch
+	y : false,	// yaw
+	z : false	// roll
+};
+let rotTess = {
+	xw : true,	// pitch
+	yw : false,	// yaw
+	zw : false,	// roll
+
+	xy : true,	// duck
+	xz : false,	// slip
+	yz : false	// twist
+};
+
 function render () {
+	if (rotSquare) square.rotate(ROT_SPEED);
+
+	if (rotCube.x) cube.rotateAbout('x',ROT_SPEED);
+	if (rotCube.y) cube.rotateAbout('y',ROT_SPEED);
+	if (rotCube.z) cube.rotateAbout('z',ROT_SPEED);
+
+	for (let rot in rotTess) {
+		if (rotTess[rot]) {
+			tess.rotateAbout(rot,ROT_SPEED);
+		}
+	}
+
 	renderer.render(scene, camera);
 	requestAnimationFrame(render);
 }
