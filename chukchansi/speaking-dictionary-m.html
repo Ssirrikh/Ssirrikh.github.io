@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset = 'utf-8'>
+	<title>Chukchansi-English Speaking Dictionary</title>
+	<link rel='stylesheet' href='style/mobile.css'>
+</head>
+
+<body>
+
+	<div id='navBar'>
+		Chukchansi Dictionary
+	</div>
+	<div class='flex-row searchBoxTemp'>
+		<div class='flex-button'></div>
+		<div class='flex-button'></div>
+		<div class='flex-button'></div>
+	</div>
+	<div id='searchPanel' class='noScrollbar'>
+		<!-- <div class='loadingSpinner'></div> -->
+		<div class='loading'>
+			<div class='loading-diamond loading-left'></div>
+			<div class='loading-diamond loading-right'></div>
+		</div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+		<div class='dummyResult'></div>
+	</div>
+
+
+
+	<!-- <div id='searchPanel' class='noScrollbar'>
+		<div class='searchResult'>Result 0</div>
+		<div class='searchResult'>Result 1</div>
+		<div class='searchResult'>Result 2</div>
+		<div class='searchResult'>Result 3</div>
+		<div class='searchResult'>Result 4</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+		<div class='searchResult'>Result N</div>
+	</div> -->
+	<!-- <div id='searchBox'>
+		<input id='searchBar' type='text' placeholder='Search...'>
+			<div class='searchButton'></div>
+			<div class='searchButton'></div>
+			<div class='searchButton'></div> -->
+		<!-- <div id='searchSubmitButton' class='searchButton'>
+		</div>
+		<div id='searchClearButton' class='searchButton'>
+			<div class="searchClearCross" style="transform: translate(-50%, -50%) rotate(45deg)"></div>
+			<div class="searchClearCross" style="transform: translate(-50%, -50%) rotate(-45deg)"></div>
+		</div>
+		<div id='searchHistoryButton' class='searchButton'>
+			<div id="searchHistoryArrow" class="arrowDown"></div>
+		</div> -->
+		
+	<!-- </div> -->
+	<!-- <div id='contentPanel'></div> -->
+
+	<!-- create loading screen -->
+
+	<!-- load dependencies -->
+	<script type='text/javascript' src='script/dictionary.js'></script>
+	<script type='text/javascript' src='data/en-ch-v10.js'></script>
+	<script type='text/javascript' src='source/resources.js'></script>
+
+	<script>
+		
+		//// WAVE 3 ////
+
+		// 1.0 hrs: design/style left panel (search)
+		// 0.5 hrs: add media queries for responsive styling
+		// 1.0 hrs: fully integrate responsive styling for navbar and search panel
+		// 0.5 hrs: partial flexbox impl
+		// 1.0 hrs: fix panelling, add panel animations
+		// 1.5 hrs: re-integrate search, begin updating to flexbox
+		// 0.5 hrs: re-integrate search results (non-interactive)
+		// 1.0 hrs: diagnose mobile visual glitches and panelling issues
+		// 0.5 hrs: optimize loading sequence for mobile
+		// 1.5 hrs: add mobile-focused loading screen w/ dummy elements
+		// 0.5 hrs: new loading screen animation, load order optimization
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// ENV SETUP ////
+
+		// debug
+		let t0 = performance.now();
+
+		// settings
+		let langToggle = false;
+		let searchSettings = {
+			shiftDown: false,
+			elem: undefined,
+			HISTORY_MAX_LENGTH: 5,
+			showHistory: false,
+			// history: []
+			historyEng: [],
+			historyChk: []
+		};
+		let soundSettings = {
+			player: document.createElement('audio'),
+			speakerAbbreviations: ['H',           'J'         ],
+			speakerNames:         ['Holly Wyatt', 'Jane Wyatt']
+		};
+
+		// build dictionary
+		let dictionary = new Dictionary(primary_eng, secondary_chk);
+		dictionary.loadData( parse_en_ch_v10(tsv_en_ch_v10) );
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// CORE ////
+
+		const subscriptFind = new RegExp('_([0-9]*)', 'ig'); // global, case-insensitive
+		const subscriptReplace = '<sub>$1</sub>';
+		const trySubscript = (text='') => text.replaceAll(subscriptFind, subscriptReplace);
+		function capitalize (s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
+
+		function playSound (filename) {
+			soundSettings.player.pause();
+			soundSettings.player.src = 'source/' + filename;
+			soundSettings.player.play();
+		}
+		function findResources (entry, resourceList) {
+			let forms = [];
+			entry.forEachPrimaryForm((synonyms,formNum) => {
+				for (let synonym of synonyms)
+					forms.push(synonym);
+			});
+			entry.forEachSecondaryForm((synonyms,formNum) => {
+				for (let synonym of synonyms)
+					forms.push(synonym);
+			});
+			//
+			let resources = [];
+			for (let filepath of resourceList) {
+				const filename = filepath.split('/').pop().split('.')[0];
+				const word = filename.split('_')[0];
+				const author = filename.split('_')[1] || 'Unknown';
+				for (let form of forms) {
+					if (form == word) {
+						resources.push([form,filepath,author]);
+					}
+				}
+			}
+			return resources;
+		}
+
+		// search result builders
+
+		function buildSearchResult (entry, word) {
+			const chkForm0 = entry.getSecondary(0);
+			const chkForm1 = entry.getSecondary(1);
+			const chkForms = chkForm1 ? (chkForm0[0]+', '+chkForm1[0]) : chkForm0[0];
+			const engForm0 = entry.getPrimary().join(', ');
+
+			const catg = entry.catg;
+
+			// let audioResources = findResources(entry, audio_en_ch);
+			// let imageResources = findResources(entry, image_en_ch);
+
+			let elemStr = '';
+
+			elemStr += '<div id="'+word+'" class="searchResult">';
+				elemStr += trySubscript(word);
+				// if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
+				// if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
+			elemStr += '</div>';
+
+			return elemStr;
+		}
+		function addSearchResultMediaIcons (entry, word) {
+			let audioResources = findResources(entry, audio_en_ch);
+			let imageResources = findResources(entry, image_en_ch);
+
+			let elemStr = '';
+
+			elemStr += trySubscript(word);
+			if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
+			if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
+
+			const element = document.getElementById(word);
+			if (element) element.innerHTML = elemStr;
+		}
+
+		function populateSearchResults (container) {
+			const t0_populate = performance.now();
+
+			let elemStr = '';
+			dictionary.forEachSynonym((entry, word) => { elemStr += buildSearchResult(entry, word); });
+			elemStr += '<p id="noResultsText" style="display:none">No results...</p>';
+			container.innerHTML = elemStr;
+
+			console.log('DOM elements generated in ' + (performance.now()-t0_populate) + 'ms.');
+			// const t0_media = performance.now();
+
+			// dictionary.forEachSynonym((entry, word) => { addSearchResultMediaIcons(entry, word); });
+
+			// console.log('Media resources indexed in ' + (performance.now()-t0_media) + 'ms.');
+		}
+
+		
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// INIT ////
+
+		function init () {
+			// dummy elems pre-loaded
+				// navbar, searchbar, searchResultsPanel
+			//
+		}
+
+		const searchPanel = document.getElementById('searchPanel');
+		// const contentPanel = document.getElementById('contentPanel');
+
+		// // load words
+		// populateSearchResults(searchPanel);
+		// // load media
+		// const t0_media = performance.now();
+		// dictionary.forEachSynonym((entry, word) => { addSearchResultMediaIcons(entry, word); });
+		// console.log('Media resources indexed in ' + (performance.now()-t0_media) + 'ms.');
+
+		let isShowingSearch = true;
+
+		window.addEventListener('keydown', e => {
+			switch (e.key) {
+			case '`':
+				if (isShowingSearch) {
+					for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
+						panel.style.transform = 'translate(-100%,0%)';
+						panel.style.animation = 'slideLeft 0.5s';
+					}
+				} else {
+					for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
+						panel.style.transform = 'translate(0%,0%)';
+						panel.style.animation = 'slideRight 0.5s';
+					}
+				}
+				isShowingSearch = !isShowingSearch;
+				break;
+			}
+		})
+
+		// init(dictionary);
+		console.log('Load time: ' + (performance.now() - t0).toFixed(0) + ' ms');
+
+		/////////////////////////////////////////////////////////////////////
+	</script>
+
+</body>
+
+</html>

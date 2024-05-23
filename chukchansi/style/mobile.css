@@ -1,0 +1,494 @@
+
+:root {
+    --background-nav: #461220; /* navbar */
+    --text-nav: #ffdab3; /* navbar */
+	
+	--background-search: #ffffff; /* searchbar */
+	--icon-search: #826545; /* search clear button, search history button */
+
+    --background-light: #f2e3d3; /* search panel, search results, content panel, hanging tabs */
+	--background-sentences: #dbb78f; /* sentences inset panel */
+    --background-medium: #bfa07e; /* search result panel, unloaded img inset panel */
+	--background-dark: #ad8e6c; /* toggle switch */
+    --text-dark: #4f3a09; /* hanging tabs, search results, content panel, sentences inset panel */
+	--text-medium: #75544b; /* searchbar, no results text, search history */
+
+    --border-dark: #4f3a09; /* panel separators, hanging tabs */
+    --border-medium: #75544b; /* search results, img inset, sentences inset */
+    --border-light: #bfa07e; /* searchbar, search history */
+
+    --layer-front: 2; /* elems that hover over content (hanging tabs, search history) */
+	--layer-nav: 3; /* nav elements are always topmost [currently unused] */
+	--layer-overlay: 5; /* focus elements treated as topmost () */
+
+	--icon-image: url('../source/image.png');
+	--icon-audio: url('../source/audio.png');
+
+	--nav-height: 7vw;
+	--search-height: 6vw;
+	--padding-height: 1.5vw;
+
+	--content-height: calc(100% - var(--nav-height) - var(--padding-height) - var(--padding-height));
+}
+
+* {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Times New Roman';
+    box-sizing: border-box;
+}	
+body {
+	background-color: var(--background-medium);
+	overflow: hidden;
+}
+div {
+	display: block;
+	width: 100%;
+}
+
+
+
+/**** LOADING ****/
+
+@keyframes loading-left {
+	  0% { left: 0%; }
+	 50% { left: 100%; }
+	100% { left: 0%; }
+}
+@keyframes loading-right {
+	0% { left: 100%; }
+   50% { left: 0%; }
+  100% { left: 100%; }
+}
+.loading {
+	background-color: transparent;
+	/* border: 1px solid green; */
+
+	display: inline-block;
+	position: absolute;
+	width: 10vw;
+	top: 30%;
+	left: 50%;
+	transform: translate(-50%,0);
+}
+.loading-diamond {
+	background-color: var(--background-nav);
+	/* border: 1px solid var(--background-nav); */
+
+	position: absolute;
+	width: 5vw;
+	height: 5vw;
+	transform: translate(-50%,-50%) rotate(45deg);
+}
+.loading-left {
+	left: 0%;
+	animation: loading-left 1.5s ease;
+	animation-iteration-count: infinite;
+}
+.loading-right {
+	left: 100%;
+	animation: loading-right 1.5s ease;
+	animation-iteration-count: infinite;
+}
+.loading-circle {
+	background-color: transparent;
+	border: 4px solid black;
+	border-radius: 50%;
+
+	animation: loading-left 1.5s ease;
+	animation-iteration-count: infinite;
+
+	position: absolute;
+	width: 5vw;
+	height: 5vw;
+	left: 0;
+}
+.loadingSpinner {
+	background-color: transparent;
+	border: 4px solid black;
+	border-radius: 50%;
+
+	border-bottom: none;
+	border-right: none;
+	animation: spinCCW 1.0s linear;
+	animation-iteration-count: infinite;
+	/* weird bug causes thin lines to accumulate on screen over time as long as anim runs */
+	/* internet research seems to say it's a graphics card issue you can't do anything about */
+	/* triggered by any anim with transform() in it? */
+	/* confirmed to to happen in firefox, but not chrome */
+
+	position: absolute;
+	/* width: 10vw; */
+	/* height: 10vw; */
+	width: 100px;
+	height: 100px;
+	top: 30%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
+
+.dummyResult {
+	background-color: var(--background-light);
+	border-radius: 6vw;
+	height: 6vw;
+}
+.dummyResult + .dummyResult {
+	margin-top: 1.0vw;
+}
+
+.searchResult {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	border: 2px solid var(--border-medium);
+	border-radius: 1.5vw;
+
+	padding: 1.0vw;
+	font-size: 4.0vw;
+}
+.searchResult + .searchResult {
+	margin-top: 1.0vw;
+}
+
+
+
+
+.searchBoxTemp {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+
+	position: absolute;
+	padding: var(--padding-height);
+	z-index: var(--layer-nav);
+
+	/* dbg */
+	border: 1px solid green;
+	height: var(--search-height);
+}
+
+
+
+/**** BEHAVIOR ****/
+
+.noScrollbar {
+	overflow: scroll;
+	-ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+	scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+.noScrollbar::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome, Safari and Opera */
+
+.flex-column {
+	display: flex;
+	flex-direction: column;
+}
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+@keyframes slideLeft {
+	0%   { transform: translate(   0%,0%); }
+	100% { transform: translate(-100%,0%); }
+}
+@keyframes slideRight {
+	0%   { transform: translate(-100%,0%); }
+	100% { transform: translate(   0%,0%); }
+}
+@keyframes spinCCW {
+	0%   { transform: translate(-50%,-50%) rotate(0deg) perspective(0); }
+	100% { transform: translate(-50%,-50%) rotate(360deg) perspective(0); }
+}
+
+
+
+/**** PAGE ELEMENTS ****/
+
+/* panelling */
+
+#navBar {
+	color: var(--text-nav);
+	background-color: var(--background-nav);
+	border-bottom: 1px solid #ffffff; /* bottom edge highlight for separation */
+	
+	position: sticky;
+	padding: 1.0vw;
+	font-size: var(--nav-height);
+	text-align: center;
+	z-index: var(--layer-nav); /* make sure nav elems and hanging tabs are on top of other content */
+}
+#searchPanel {
+	color: var(--text-dark);
+	background-color: var(--background-medium);
+	border: 1px solid red;
+
+	display: inline-block;
+	position: absolute;
+	padding: 1.0vw 8.0vw;
+	padding-top: calc(var(--search-height) + 4 * var(--padding-height));
+	/* padding-top: 0; */
+	height: var(--content-height);
+}
+#searchBox {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	/* border: 1px solid green; */
+
+	position: absolute;
+	padding: var(--padding-height);
+	/* height: var(--search-height); */
+}
+#contentPanel {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	border: 1px solid blue;
+
+	display: inline-block;
+	position: absolute;
+	padding: 1.0vw 8.0vw;
+	height: var(--content-height);
+	left: 100%;
+}
+
+/* left panel (search) */
+
+/* .searchResult {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	border: 2px solid var(--border-medium);
+	border-radius: 1.5vw;
+
+	padding: 1.0vw;
+	font-size: 4.0vw;
+}
+.searchResult + .searchResult {
+	margin-top: 1.0vw;
+} */
+
+/* left panel search bar */
+
+#searchBar {
+	color: var(--text-medium);
+	background-color: var(--background-search);
+	border: 2px solid var(--border-light);
+	border-radius: 4.0vw;
+
+	/* margin: 1px; */
+	padding: 0vw 5.0vw 0vw 1.0vw;
+	padding-left: 3.5vw;
+	width: 100%;
+
+	font-size: var(--search-height);
+}
+#searchBar:focus {
+	border: 2px solid var(--text-medium);
+	/* margin: 0px; */
+	outline: none;
+}
+
+#searchButtons {
+	position: absolute;
+	top: 0;
+	right: 0;
+	float: right;
+
+	height: 100%;
+}
+.searchButton {
+	cursor: pointer;
+
+	background-color: #ff0000;
+	border-radius: 50%;
+
+	position: absolute;
+	top: calc(50%);
+	width: calc(var(--search-height) + var(--padding-height));
+	height: calc(var(--search-height) + var(--padding-height));
+	transform: translate(0%, -50%);
+}
+.searchButton:nth-of-type(1) {
+	right: var(--padding-height);
+}
+.searchButton:nth-of-type(2) {
+	right: calc(1.5 * var(--search-height) + 1 * var(--padding-height));
+}
+.searchButton:nth-of-type(3) {
+	right: calc(2.5 * var(--search-height) + 2 * var(--padding-height));
+}
+
+/* #searchClearButton {
+	cursor: pointer;
+
+	background-color: #ff0000;
+	border-radius: 50%;
+
+	position: absolute;
+	top: calc(50%);
+	right: 10px;
+	width: 24px;
+	height: 24px;
+	transform: translate(0%, -50%);
+} */
+.searchClearCross {
+	background-color: var(--icon-search);
+
+	display: inline-block;
+	position: absolute;
+	top: 50%;
+	right: 50%;
+	width: 2px;
+	height: 18px;
+	/*transform: translate(-50%, -50%);*/
+}
+/* #searchHistoryButton {
+	cursor: pointer;
+
+	background-color: #ff0000;
+	border-radius: 50%;
+
+	position: absolute;
+	top: calc(50%);
+	right: calc(10px + 24px);
+	width: 24px;
+	height: 24px;
+	transform: translate(0%, -50%);
+
+	border-radius: 50%;
+} */
+#searchHistoryArrow {
+	border: solid var(--icon-search);
+	border-width: 0 3px 3px 0;
+
+	position: absolute;
+	padding: 4px;
+	left: 50%;
+
+	transition: all 0.25s ease;
+}
+.arrowDown {
+	top: calc(50% - 2px);
+	transform: translate(-50%,-50%) rotate(45deg);
+}
+.arrowUp {
+	top: calc(50% + 3px);
+	transform: translate(-50%,-50%) rotate(225deg);
+}
+
+/* left panel language toggle */
+
+#langToggleTitle {
+	position: absolute;
+	top: calc(50% - 1px);
+	left: 29px;
+	transform: translate(-50%, -50%);
+
+	font-size: 20px;
+}
+#langToggle {
+	cursor: pointer;
+	
+	background-color: var(--background-dark);
+	border: 3px solid var(--border-dark);
+	border-radius: 15px;
+
+	position: absolute;
+	top: 50%;
+	left: calc(100% - 7px);
+	width: 30px;
+	height: 16px;
+	transform: translate(-100%, -50%);
+}
+#langToggleSwitch {
+	background-color: var(--border-dark);
+
+	position: absolute;
+	top: 50%;
+	left: 1px;
+	width: 18px;
+	height: 14px;
+	transform: translate(0%, -50%);
+
+	border-radius: 7px;
+}
+
+
+
+/**** MOBILE-DESKTOP INTERCHANGE ****/
+
+/* mobile-first for faster load times */
+
+/** MOBILE MODE (portrait) **/
+@media (max-aspect-ratio : 1/1) {
+	/* panelling */
+	/* #navBar {
+		color: green;
+		padding: 1.0vw;
+		font-size: 6.0vw;
+	}
+	#searchPanel {
+		padding: 1.0vw 8.0vw;
+		font-size: 6.0vw;
+	} */
+}
+/** DESKTOP MODE (landscape) **/
+@media (min-aspect-ratio : 1/1) {
+	/* panelling */
+	/* #navBar {
+		color: red;
+		padding: max(0.65vw, 10px);
+		font-size: max(1.6vw, 25px);
+	}
+	#searchPanel {
+		width: 25%;
+		
+		padding: max(0.25vw, 4px);
+		font-size: max(1.0vw, 16px);
+	} */
+}
+
+
+/**** PAGE ELEMENTS ****/
+
+
+
+
+
+/* search panel */
+
+
+
+/* search results */
+
+/* .searchResult {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	border: 2px solid var(--border-medium);
+	border-radius: 1.5vw;
+
+	padding: 1.0vw;
+	font-size: 4.0vw;
+}
+.searchResult + .searchResult {
+	margin-top: 1.0vw;
+} */
+
+
+
+
+
+/**** ICONOGRAPHY ****/
+
+.searchResultAudioIcon {
+	width:20px;
+	height:20px;
+	float:right;
+	
+	background: var(--icon-audio);
+	background-size: contain;
+}
+.searchResultImageIcon {
+	width:20px;
+	height:20px;
+	float:right;
+	
+	background: var(--icon-image);
+	background-size: contain;
+}
