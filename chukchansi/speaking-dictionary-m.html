@@ -17,7 +17,7 @@
 		<div class='flex-button'></div>
 		<div class='flex-button'></div>
 	</div>
-	<div id='searchPanel' class='noScrollbar'>
+	<div id='searchResults' class='noScrollbar'>
 		<!-- <div class='loadingSpinner'></div> -->
 		<div class='loading'>
 			<div class='loading-diamond loading-left'></div>
@@ -119,6 +119,8 @@
 		// 0.5 hrs: optimize loading sequence for mobile
 		// 1.5 hrs: add mobile-focused loading screen w/ dummy elements
 		// 0.5 hrs: new loading screen animation, load order optimization
+		// 1.0 hrs: research web workers for multithreading and responsiveness
+		// 2.5 hrs: add media resource indexing to reduce load/search time, dynamic DOM construction optimization
 
 		/////////////////////////////////////////////////////////////////////
 
@@ -148,6 +150,110 @@
 		let dictionary = new Dictionary(primary_eng, secondary_chk);
 		dictionary.loadData( parse_en_ch_v10(tsv_en_ch_v10) );
 
+
+
+		//// MEDIA RESOURCES ////
+
+		// all resource interactions exclusively in lowercase to avoid problems with OS, proper nouns, bad naming
+		let imageResources = {};
+		let audioResources = {};
+
+		// media indexing
+		function indexResources () {
+			const t0_resource_index = performance.now();
+			let numResources = 0;
+			// images: filename is word in english, with spaces if applicable
+			for (let image of image_en_ch) {
+				const word = [...image.matchAll(/(?<=\/)[^\/]+(?=\.)/g)][0][0].toLowerCase(); // use lookahead/lookbehind to isolate word in filename
+				if (!word) continue;
+				numResources++;
+				if (!imageResources[word]) {
+					imageResources[word] = [image];
+				} else {
+					imageResources[word].push(image);
+				}
+			}
+			// audio: filename is word in chukchansi, an underscore, and a speaker ID
+			for (let audio of audio_en_ch) {
+				const word = [...audio.matchAll(/(?<=\/)[^\/]+(?=\_.+\.)/g)][0][0].toLowerCase(); // use lookahead/lookbehind to isolate word in filename
+				if (!word) continue;
+				numResources++;
+				if (!audioResources[word]) {
+					audioResources[word] = [audio];
+				} else {
+					audioResources[word].push(audio);
+				}
+			}
+			console.log(numResources + ' media resources indexed in ' + (performance.now()-t0_resource_index) + 'ms. (' + image_en_ch.length + ' image, ' + audio_en_ch.length + ' audio)');
+		}
+
+		// media access
+		function playSound (filename) {
+			soundSettings.player.pause();
+			soundSettings.player.src = 'source/' + filename;
+			soundSettings.player.play();
+		}
+		function findIndexedImages (entry, word) {
+			// rets array of image files for any synonym/form of "entry"
+			// if "word" is specified, exact filename matches will be moved to the front of the array
+			// needed in cases like "leeleʔhiy'", which means "book"/"school" in diff contexts that have very diff images
+			if (Object.keys(imageResources).length == 0) console.warn('Attempted to access images before any were indexed.');
+			let resources = [];
+			word = word.toLowerCase();
+			entry.forEachPrimaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (imageResources[form]) {
+						for (const image of imageResources[form]) {
+							(word && form==word) ? resources.unshift(image) : resources.push(image);
+						}
+					}
+				}
+			});
+			entry.forEachSecondaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (imageResources[form]) {
+						for (const image of imageResources[form]) {
+							(word && form==word) ? resources.unshift(image) : resources.push(image);
+						}
+					}
+				}
+			});
+			return resources;
+		}
+		function findIndexedAudio (entry, word) {
+			// rets array of image files for any synonym/form of "entry"
+			// if "word" is specified, exact filename matches will be moved to the front of the array
+			// needed in cases like "leeleʔhiy'", which means "book"/"school" in diff contexts that have very diff images
+			if (Object.keys(audioResources).length == 0) console.warn('Attempted to access audio before any was indexed.');
+			let resources = [];
+			word = word.toLowerCase();
+			entry.forEachPrimaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (audioResources[form]) {
+						for (const audio of audioResources[form]) {
+							(word && form==word) ? resources.unshift(audio) : resources.push(audio);
+						}
+					}
+				}
+			});
+			entry.forEachSecondaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (audioResources[form]) {
+						for (const audio of audioResources[form]) {
+							(word && form==word) ? resources.unshift(audio) : resources.push(audio);
+						}
+					}
+				}
+			});
+			return resources;
+		}
+
+
+
 		/////////////////////////////////////////////////////////////////////
 
 		//// CORE ////
@@ -157,75 +263,58 @@
 		const trySubscript = (text='') => text.replaceAll(subscriptFind, subscriptReplace);
 		function capitalize (s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
 
-		function playSound (filename) {
-			soundSettings.player.pause();
-			soundSettings.player.src = 'source/' + filename;
-			soundSettings.player.play();
-		}
-		function findResources (entry, resourceList) {
-			let forms = [];
-			entry.forEachPrimaryForm((synonyms,formNum) => {
-				for (let synonym of synonyms)
-					forms.push(synonym);
-			});
-			entry.forEachSecondaryForm((synonyms,formNum) => {
-				for (let synonym of synonyms)
-					forms.push(synonym);
-			});
-			//
-			let resources = [];
-			for (let filepath of resourceList) {
-				const filename = filepath.split('/').pop().split('.')[0];
-				const word = filename.split('_')[0];
-				const author = filename.split('_')[1] || 'Unknown';
-				for (let form of forms) {
-					if (form == word) {
-						resources.push([form,filepath,author]);
-					}
-				}
-			}
-			return resources;
-		}
+
+		
 
 		// search result builders
 
-		function buildSearchResult (entry, word) {
-			const chkForm0 = entry.getSecondary(0);
-			const chkForm1 = entry.getSecondary(1);
-			const chkForms = chkForm1 ? (chkForm0[0]+', '+chkForm1[0]) : chkForm0[0];
-			const engForm0 = entry.getPrimary().join(', ');
+		
+		// function addSearchResultMediaIcons (entry, word) {
+		// 	let audioResources = findResources(entry, audio_en_ch);
+		// 	let imageResources = findResources(entry, image_en_ch);
 
-			const catg = entry.catg;
+		// 	let elemStr = '';
 
-			// let audioResources = findResources(entry, audio_en_ch);
-			// let imageResources = findResources(entry, image_en_ch);
+		// 	elemStr += trySubscript(word);
+		// 	if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
+		// 	if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
 
-			let elemStr = '';
+		// 	const element = document.getElementById(word);
+		// 	if (element) element.innerHTML = elemStr;
+		// }
 
-			elemStr += '<div id="'+word+'" class="searchResult">';
-				elemStr += trySubscript(word);
-				// if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
-				// if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
-			elemStr += '</div>';
 
-			return elemStr;
-		}
-		function addSearchResultMediaIcons (entry, word) {
-			let audioResources = findResources(entry, audio_en_ch);
-			let imageResources = findResources(entry, image_en_ch);
 
-			let elemStr = '';
+		//// STATIC PAGE CONSTRUCTION ////
 
-			elemStr += trySubscript(word);
-			if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
-			if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
-
-			const element = document.getElementById(word);
-			if (element) element.innerHTML = elemStr;
-		}
-
-		function populateSearchResults (container) {
+		function populateSearchResults () {
 			const t0_populate = performance.now();
+
+			const container = document.getElementById('searchResults');
+
+			function buildSearchResult (entry, word) {
+				const chkForm0 = entry.getSecondary(0);
+				const chkForm1 = entry.getSecondary(1);
+				const chkForms = chkForm1 ? (chkForm0[0]+', '+chkForm1[0]) : chkForm0[0];
+				const engForm0 = entry.getPrimary().join(', ');
+
+				const catg = entry.catg;
+
+				const audioResources = findIndexedAudio(entry,word);
+				const imageResources = findIndexedImages(entry,word);
+
+				let elemStr = '';
+
+				elemStr += '<div id="'+word+'" class="searchResult">';
+					elemStr += trySubscript(word);
+					if (audioResources.length > 0) elemStr += '<div class="searchResultAudioIcon"></div>';
+					if (imageResources.length > 0) elemStr += '<div class="searchResultImageIcon"></div>';
+				elemStr += '</div>';
+
+				return elemStr;
+			}
+
+			
 
 			let elemStr = '';
 			dictionary.forEachSynonym((entry, word) => { elemStr += buildSearchResult(entry, word); });
@@ -233,12 +322,13 @@
 			container.innerHTML = elemStr;
 
 			console.log('DOM elements generated in ' + (performance.now()-t0_populate) + 'ms.');
-			// const t0_media = performance.now();
-
-			// dictionary.forEachSynonym((entry, word) => { addSearchResultMediaIcons(entry, word); });
-
-			// console.log('Media resources indexed in ' + (performance.now()-t0_media) + 'ms.');
 		}
+
+
+
+		//// DYNAMIC PAGE UPDATES ////
+
+		//
 
 		
 
@@ -248,9 +338,15 @@
 
 		function init () {
 			// dummy elems pre-loaded
-				// navbar, searchbar, searchResultsPanel
-			//
+				// navbar
+				// searchbar (empty)
+				// searchResultsPanel (dummy entries, loading animation)
+			// precomputation
+			indexResources();
+			// build DOM
+			populateSearchResults();
 		}
+		init();
 
 		const searchPanel = document.getElementById('searchPanel');
 		// const contentPanel = document.getElementById('contentPanel');
@@ -263,22 +359,34 @@
 		// console.log('Media resources indexed in ' + (performance.now()-t0_media) + 'ms.');
 
 		let isShowingSearch = true;
+		function doSlide () {
+			if (isShowingSearch) {
+				for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
+					panel.style.transform = 'translate(-100%,0%)';
+					panel.style.animation = 'slideLeft 0.5s';
+				}
+			} else {
+				for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
+					panel.style.transform = 'translate(0%,0%)';
+					panel.style.animation = 'slideRight 0.5s';
+				}
+			}
+			isShowingSearch = !isShowingSearch;
+		}
 
 		window.addEventListener('keydown', e => {
 			switch (e.key) {
 			case '`':
-				if (isShowingSearch) {
-					for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
-						panel.style.transform = 'translate(-100%,0%)';
-						panel.style.animation = 'slideLeft 0.5s';
-					}
-				} else {
-					for (const panel of [document.getElementById('searchPanel'),document.getElementById('searchBox'),document.getElementById('contentPanel')]) {
-						panel.style.transform = 'translate(0%,0%)';
-						panel.style.animation = 'slideRight 0.5s';
-					}
-				}
-				isShowingSearch = !isShowingSearch;
+				// doSlide();
+
+				// indexResources();
+				// console.log( "family", findIndexedImages(dictionary.searchWord("family"),"family") );
+				// console.log( "family", findIndexedAudio(dictionary.searchWord("family"),"family") );
+				// dictionary.togglePrimary();
+				// console.log( "heedin'", findIndexedImages(dictionary.searchWord("heedin'"),"heedin'") );
+				// console.log( "heedin'", findIndexedAudio(dictionary.searchWord("heedin'"),"heedin'") );
+				
+				populateSearchResults();
 				break;
 			}
 		})
