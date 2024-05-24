@@ -1,7 +1,4 @@
 let image_en_ch = [
-	"404.png",
-	"audio.png",
-	"image.png",
 	"images-batch-0/baabas.jpg",
 	"images-batch-0/bokbokish.jpg",
 	"images-batch-0/boʔush.jpg",

@@ -1,6 +1,3 @@
-404.png
-audio.png
-image.png
 list-files-jasmine-demo.py
 list-files.py
 resources-jasmine.js

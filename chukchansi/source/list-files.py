@@ -7,6 +7,7 @@ import os
 WORKING_DIRECTORY = os.getcwd()
 EXT_IMAGE = ['jpg', 'png']
 EXT_AUDIO = ['mp3', 'wav']
+EXCLUDE = ['404.png','audio.png','image.png','j.png']
 OUTPUT_TEXT = 'resources.txt'
 OUTPUT_CODE = 'resources.js'
 
@@ -24,6 +25,8 @@ for (dirpath, dirnames, filenames) in os.walk(WORKING_DIRECTORY):
     for filename in filenames:
         FILE_PATH = (DIRECTORY_PATH + '\\' + filename).replace('\\','/')[1:] # [1:] to remove initial '/'
         FILE_EXT = FILE_PATH.split('.')[-1]
+        if FILE_PATH in EXCLUDE:
+            continue
         files.append(FILE_PATH)
         if FILE_EXT in EXT_IMAGE:
             print('IMG ... ' + FILE_PATH)
