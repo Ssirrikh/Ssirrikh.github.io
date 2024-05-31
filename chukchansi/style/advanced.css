@@ -1,0 +1,168 @@
+
+:root {
+	--background-nav: #461220; /* navbar */
+	--text-nav: #ffdab3; /* navbar */
+	
+	--background-search: #ffffff; /* searchbar */
+	--icon-search: #826545; /* search clear button, search history button */
+
+	--background-light: #f2e3d3; /* search panel, search results, content panel, hanging tabs */
+	--background-sentences: #dbb78f; /* sentences inset panel */
+	--background-medium: #bfa07e; /* search result panel, unloaded img inset panel */
+	--background-dark: #ad8e6c; /* toggle switch */
+	--text-dark: #4f3a09; /* hanging tabs, search results, content panel, sentences inset panel */
+	--text-medium: #75544b; /* searchbar, no results text, search history */
+
+	--border-dark: #4f3a09; /* panel separators, hanging tabs */
+	--border-medium: #75544b; /* search results, img inset, sentences inset */
+	--border-light: #bfa07e; /* searchbar, search history */
+
+	--layer-front: 2; /* elems that hover over content (hanging tabs, search history) */
+	--layer-nav: 3; /* nav elements are always topmost [currently unused] */
+	--layer-overlay: 5; /* focus elements treated as topmost () */
+
+	--icon-image: url('../source/image.png');
+	--icon-audio: url('../source/audio.png');
+
+	--padding-height: 0.5vw;
+    --nav-font-size: 2vw;
+	--nav-height: calc(var(--nav-font-size) + var(--padding-height) + var(--padding-height) + 1px);
+    --left-panel-width: 25%;
+	--search-height: 6vw;
+
+	--content-height: calc(100% - var(--nav-font-size) - var(--padding-height) - var(--padding-height) - 1px);
+}
+
+* {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Times New Roman';
+	box-sizing: border-box;
+}	
+body {
+	background-color: var(--background-medium);
+	overflow: hidden;
+}
+div {
+	display: block;
+	width: 100%;
+}
+
+
+
+/**** LOADING ****/
+
+@keyframes loading-left {
+	  0% { left: 0%; }
+	 50% { left: 100%; }
+	100% { left: 0%; }
+}
+@keyframes loading-right {
+	0% { left: 100%; }
+   50% { left: 0%; }
+  100% { left: 100%; }
+}
+.loading {
+	background-color: transparent;
+	/* border: 1px solid green; */
+
+	display: inline-block;
+	position: absolute;
+	width: 4vw;
+	top: 30%;
+	left: 50%;
+	transform: translate(-50%,0);
+}
+.loading-diamond {
+	background-color: var(--background-nav);
+	/* border: 1px solid var(--background-nav); */
+
+	position: absolute;
+	width: 2vw;
+	height: 2vw;
+	transform: translate(-50%,-50%) rotate(45deg);
+}
+.loading-left {
+	left: 0%;
+	animation: loading-left 1.5s ease;
+	animation-iteration-count: infinite;
+}
+.loading-right {
+	left: 100%;
+	animation: loading-right 1.5s ease;
+	animation-iteration-count: infinite;
+}
+
+.dummyResult {
+	background-color: var(--background-light);
+	border-radius: 6vw;
+	height: 6vw;
+}
+.dummyResult + .dummyResult {
+	margin-top: 1.0vw;
+}
+
+
+
+/**** BEHAVIOR ****/
+
+.noScrollbar {
+	overflow: scroll;
+	-ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+	scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+.noScrollbar::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome, Safari and Opera */
+
+.flex-column {
+	display: flex;
+	flex-direction: column;
+}
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+
+
+/**** PAGE ELEMENTS ****/
+
+/* panelling */
+
+#navBar {
+	color: var(--text-nav);
+	background-color: var(--background-nav);
+	border-bottom: 1px solid #ffffff; /* bottom edge highlight for separation */
+	
+	position: sticky;
+	padding: var(--padding-height);
+	font-size: var(--nav-font-size);
+    line-height: var(--nav-font-size); /* make div height = font-size + padding */
+	text-align: center;
+	z-index: var(--layer-nav); /* make sure nav elems and hanging tabs are on top of other content */
+}
+#searchPanel {
+	color: var(--text-dark);
+	background-color: var(--background-light);
+	border: 1px solid red;
+
+	display: inline-block;
+	position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    width: var(--left-panel-width);
+    height: var(--content-height);
+	padding: 1.0vw 8.0vw;
+}
+#searchResults {
+	color: var(--text-dark);
+	background-color: var(--background-medium);
+	border: 1px solid blue;
+
+	display: inline-block;
+	position: absolute;
+    top: var(--nav-height);
+    left: var(--left-panel-width);
+    width: calc(100% - var(--left-panel-width));
+    height: var(--content-height);
+	padding: 1.0vw 8.0vw;
+}

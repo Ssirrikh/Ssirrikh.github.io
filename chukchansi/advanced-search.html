@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset = 'utf-8'>
+	<title>Eng-Chk Advanced Search</title>
+	<link rel='stylesheet' href='style/advanced.css'>
+</head>
+
+<body>
+
+	<div id='navBar'>
+		Chukchansi Dictionary
+	</div>
+	<div id='searchPanel' class='noScrollbar'>
+		search place for search thingz
+	</div>
+	<div id='searchResults' class='noScrollbar'>
+		<div class='loading'>
+			<div class='loading-diamond loading-left'></div>
+			<div class='loading-diamond loading-right'></div>
+		</div>
+	</div>
+
+	<!-- load dependencies -->
+	<script type='text/javascript' src='script/dictionary.js'></script>
+	<script type='text/javascript' src='data/en-ch-v12.js'></script>
+	<script type='text/javascript' src='source/resources.js'></script>
+
+	<script>
+
+		//// WAVE 3 ////
+
+		// 2.0 hrs: css cleanup and initial page layout
+
+		//// TODO ////
+		//
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// ENV SETUP ////
+
+		// debug
+		let t1 = Date.now();
+		// settings
+		let langToggle = false;
+		let searchSettings = {
+			shiftDown: false,
+			elem: undefined,
+			HISTORY_MAX_LENGTH: 5,
+			showHistory: false,
+			showFilters: false,
+			// history
+			historyEng: [],
+			historyChk: [],
+			// catgs
+			VALID_CATGS: ['all','noun','adjective','demonstrative','verb','auxiliary verb','pronoun','adverb','misc'],
+			catgStrs: {
+				'all':'SHOW ALL', 'none':'NONE', 'misc':'Misc',
+				'noun':'Noun', 'adjective':'Adj', 'demonstrative':'Dem',
+				'verb':'Verb','auxiliary verb':'Aux Verb','pronoun':'Pronoun','adverb':'Adv'
+			},
+			catgs: ['noun','adjective','demonstrative','verb','auxiliary verb','pronoun','adverb'],
+			catgMisc: true,
+			hasAllCatgs: () => {
+				for (let catg of ['noun','adjective','demonstrative','verb','auxiliary verb','pronoun','adverb'])
+					if (searchSettings.catgs.indexOf(catg) == -1)
+						return false;
+				return searchSettings.catgMisc;
+			},
+			hasNoCatgs: () => {
+				for (let catg of ['noun','adjective','demonstrative','verb','auxiliary verb','pronoun','adverb'])
+					if (searchSettings.catgs.indexOf(catg) != -1)
+						return false;
+				return !searchSettings.catgMisc;
+			}
+		};
+		let soundSettings = {
+			player: document.createElement('audio'),
+			speakerAbbreviations: ['H',           'J'         ],
+			speakerNames:         ['Holly Wyatt', 'Jane Wyatt']
+		};
+
+		// build dictionary
+		let dictionary = new Dictionary(primary_eng, secondary_chk);
+		dictionary.loadData( parse_en_ch_v12(tsv_en_ch_v12) );
+
+
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// CORE ////
+
+		function capitalize (s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
+		const subscriptFind = new RegExp('_([0-9]*)', 'ig'); // global, case-insensitive
+		const subscriptReplace = '<sub>$1</sub>';
+		const trySubscript = (text='') => text.replaceAll(subscriptFind, subscriptReplace);
+
+		window.addEventListener('keydown', (e) => {
+			switch (e.key) {
+			case '`': // [`] for dev action
+				console.log('dev action');
+				//
+				break;
+			}
+		});
+
+		/////////////////////////////////////////////////////////////////////
+
+		//// INIT ////
+
+		init(dictionary);
+		console.log('Load time: ' + (Date.now() - t1) + ' ms');
+
+		/////////////////////////////////////////////////////////////////////
+	</script>
+
+</body>
+
+</html>
