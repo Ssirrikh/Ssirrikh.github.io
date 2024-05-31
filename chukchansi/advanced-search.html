@@ -87,14 +87,129 @@
 
 
 
+		//// MEDIA RESOURCES ////
+
+		// all resource interactions exclusively in lowercase to avoid problems with OS, proper nouns, bad naming
+		let imageResources = {};
+		let audioResources = {};
+
+		// media indexing
+		function indexResources () {
+			const t0_resource_index = performance.now();
+			let numResources = 0;
+			// images: filename is word in english, with spaces if applicable
+			for (let image of image_en_ch) {
+				const word = [...image.matchAll(/(?<=\/)[^\/]+(?=\.)/g)][0][0].toLowerCase(); // use lookahead/lookbehind to isolate word in filename
+				if (!word) continue;
+				numResources++;
+				if (!imageResources[word]) {
+					imageResources[word] = [image];
+				} else {
+					imageResources[word].push(image);
+				}
+			}
+			// audio: filename is word in chukchansi, an underscore, and a speaker ID
+			for (let audio of audio_en_ch) {
+				const word = [...audio.matchAll(/(?<=\/)[^\/]+(?=\_.+\.)/g)][0][0].toLowerCase(); // use lookahead/lookbehind to isolate word in filename
+				if (!word) continue;
+				numResources++;
+				if (!audioResources[word]) {
+					audioResources[word] = [audio];
+				} else {
+					audioResources[word].push(audio);
+				}
+			}
+			console.log(numResources + ' media resources indexed in ' + (performance.now()-t0_resource_index) + 'ms. (' + image_en_ch.length + ' image, ' + audio_en_ch.length + ' audio)');
+		}
+
+		// media access
+		function playSound (filename) {
+			soundSettings.player.pause();
+			soundSettings.player.src = 'source/' + filename;
+			soundSettings.player.play();
+		}
+		function findIndexedImages (entry, word) {
+			// rets array of image files for any synonym/form of "entry"
+			// if "word" is specified, exact filename matches will be moved to the front of the array
+			// needed in cases like "leeleʔhiy'", which means "book"/"school" in diff contexts that have very diff images
+			if (Object.keys(imageResources).length == 0) console.warn('Attempted to access images before any were indexed.');
+			let resources = [];
+			word = word.toLowerCase();
+			entry.forEachPrimaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (imageResources[form]) {
+						for (const image of imageResources[form]) {
+							(word && form==word) ? resources.unshift(image) : resources.push(image);
+						}
+					}
+				}
+			});
+			entry.forEachSecondaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (imageResources[form]) {
+						for (const image of imageResources[form]) {
+							(word && form==word) ? resources.unshift(image) : resources.push(image);
+						}
+					}
+				}
+			});
+			return resources;
+		}
+		function findIndexedAudio (entry, word) {
+			// rets array of image files for any synonym/form of "entry"
+			// if "word" is specified, exact filename matches will be moved to the front of the array
+			// needed in cases like "leeleʔhiy'", which means "book"/"school" in diff contexts that have very diff images
+			if (Object.keys(audioResources).length == 0) console.warn('Attempted to access audio before any was indexed.');
+			let resources = [];
+			word = word.toLowerCase();
+			entry.forEachPrimaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (audioResources[form]) {
+						for (const audio of audioResources[form]) {
+							(word && form==word) ? resources.unshift(audio) : resources.push(audio);
+						}
+					}
+				}
+			});
+			entry.forEachSecondaryForm(synonyms => {
+				for (let form of synonyms) {
+					form = form.toLowerCase();
+					if (audioResources[form]) {
+						for (const audio of audioResources[form]) {
+							(word && form==word) ? resources.unshift(audio) : resources.push(audio);
+						}
+					}
+				}
+			});
+			return resources;
+		}
+
+
+
 		/////////////////////////////////////////////////////////////////////
 
 		//// CORE ////
 
-		function capitalize (s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
 		const subscriptFind = new RegExp('_([0-9]*)', 'ig'); // global, case-insensitive
 		const subscriptReplace = '<sub>$1</sub>';
 		const trySubscript = (text='') => text.replaceAll(subscriptFind, subscriptReplace);
+		function capitalize (s) { s=s.toString().toLowerCase(); return (s[0]||'').toUpperCase()+s.substr(1); }
+
+
+		
+
+		// search result builders
+
+        //
+
+
+
+
+
+
 
 		window.addEventListener('keydown', (e) => {
 			switch (e.key) {
@@ -105,11 +220,7 @@
 			}
 		});
 
-		/////////////////////////////////////////////////////////////////////
-
-		//// INIT ////
-
-		init(dictionary);
+        
 		console.log('Load time: ' + (Date.now() - t1) + ' ms');
 
 		/////////////////////////////////////////////////////////////////////
