@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset = 'utf-8'>
+	<title>Minigames</title>
+	<style>
+		* {
+			margin: 0px;
+			padding: 0px;
+			font-family: 'Consolas, Times New Roman';
+		}
+		body {
+			color: #00ff00;
+			background-color: #000000;
+			overflow: hidden;
+		}
+
+		#menuContainer {
+			position: absolute;
+			left: 0%;
+			width: 25%;
+			height: 100%;
+			background-color: #222222;
+		}
+		#menuTitle {
+			margin: 10px;
+
+			font-size: 30px;
+			font-weight: bold;
+		}
+		#separator {
+			left: 10%;
+			width: 80%;
+			border-bottom: 1px solid green;
+		}
+
+		#contentContainer {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			width: 60vh;
+			height: 60vh;
+			background-color: #111111;
+			transform: translate(-50%,-50%);
+		}
+		#instructionsContainer {
+			position: absolute;
+			right: 0%;
+			width: 20%;
+			height: 100%;
+			background-color: #111111;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- static content -->
+	<div id = 'menuContainer'>
+		<p id = 'menuTitle'>Select Minigame</p>
+		<div id = 'separator'></div>
+		<!-- content added dynamically -->
+	</div>
+	<div id = 'contentContainer'>
+		<!-- content added dynamically -->
+	</div>
+	<div id = 'instructionsContainer'>
+		<p id = 'instructionsText'>[no instructions]</p>
+		<!-- content added dynamically -->
+	</div>
+
+	<!-- load dependencies -->
+	<script type='text/javascript' src='script/loading-screen.js'></script>
+
+	<!-- dynamic content -->
+	<script>
+		let loadingScreen = new LoadingScreen(7, '#00ff00');
+		loadingScreen.attach(document.getElementById('contentContainer'));
+
+		let elemStr = '';
+
+		elemStr += '<p id = "menuTitle">Select Minigame</p>';
+		elemStr += '<div id = "separator"></div>';
+		for (let i = 0; i < 6; i++) {
+			elemStr += '<div style="margin-left:50px;">Minigame '+i+'</div>';
+		}
+
+		document.getElementById('menuContainer').innerHTML = elemStr;
+	</script>
+</body>
+
+</html>

@@ -10,12 +10,17 @@
 			padding: 0px;
             height: 100%;
 			font-family: 'Times New Roman';
+			overflow: auto; 
+			-webkit-overflow-scrolling: touch;
 		}
     </style>
 </head>
 
 <body>
+	<!-- https://stackoverflow.com/questions/18432790/embed-tag-not-displaying-pdf-file-on-mobile-browsers -->
+	<!-- https://stackoverflow.com/questions/36382249/embed-pdf-in-mobile-browsers -->
     <object id="pdfdisplay" data="data/Chukchansi-English Dictionary 2023.pdf" type="application/pdf" style="width:100%;">
-        <div>No online PDF viewer installed</div>
+		<embed src="data/Chukchansi-English Dictionary 2023.pdf" width="100%" height="600px"/>
+        <!-- <div>No online PDF viewer installed</div> -->
     </object>
 </body>

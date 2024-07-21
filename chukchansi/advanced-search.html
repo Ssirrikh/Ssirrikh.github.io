@@ -20,6 +20,21 @@
 			<div class='loading-diamond loading-left'></div>
 			<div class='loading-diamond loading-right'></div>
 		</div>
+		<div class='search-result'>
+			<div>
+				<span class='search-result-title'><span class='highlight'>Black</span>berry</span>
+				<span class='search-result-catg'>noun</span>
+				<span class='search-result-translation'>maamil', maamila</span>
+			</div>
+			<div>
+				<span class='search-result-sentence'>The <span class='highlight'>black</span>berries were very sweet.</span>
+				<span class='search-result-sentence-translation'>Meejintaʔ k'uyuuk'ataʔ maamil'.</span>
+			</div>
+			<div>
+				<span class='search-result-sentence'>I'm going to pick <span class='highlight-2'>black</span>berries soon.</span>
+				<span class='search-result-sentence-translation'>Goobeʔ naʔ miʔin maamila.</span>
+			</div>
+		</div>
 	</div>
 
 	<!-- load dependencies -->
@@ -32,6 +47,8 @@
 		//// WAVE 3 ////
 
 		// 2.0 hrs: css cleanup and initial page layout
+		// 1.0 hrs: css formatting for search results
+		// 2.5 hrs: integrate fragment highlighting into search; set up search filter framework 
 
 		//// TODO ////
 		//
@@ -203,7 +220,141 @@
 
 		// search result builders
 
-        //
+		const DEFAULT_FILTERS = {
+			//
+		};
+
+		let includeNonmatches = false; // add entries to search results even if they don't match the search frag
+		let filters = {
+			searchIn : { // select parts of entry to include/exclude from search
+				title : true,
+				titleTranslation : false,
+				sentences : true,
+				sentenceTranslations : false
+			},
+			catg : {
+				// ['noun','adjective','demonstrative','verb','auxiliary verb','pronoun','adverb']
+				active : ['adjective','demonstrative','verb','auxiliary verb','pronoun','adverb'],
+				misc : true
+			}
+		};
+
+		// let searchIn = { // select parts of entry to include/exclude from search
+		// 	title : true,
+		// 	titleTranslation : false,
+		// 	sentences : true,
+		// 	sentenceTranslations : false
+		// };
+
+        function buildSearchResult (entry,word,fragment='',fragFind,fragReplace) {
+			const chkForm0 = entry.getSecondary(0);
+			const chkForm1 = entry.getSecondary(1);
+			const chkForms = chkForm1 ? (chkForm0[0]+', '+chkForm1[0]) : chkForm0[0];
+			const engForm0 = entry.getPrimary().join(', ');
+
+			// fetch entry data
+			let title 				= !langToggle	? word			: chkForms;
+			let titleTranslation	=  langToggle	? engForm0		: chkForms;
+			let catg				= entry.catg;
+			let synonyms			= entry.getPrimarySynonyms(word);
+			// fetch sentence data
+			let sentences			= [];
+			let sentenceFormStrs	= [];
+			entry.forEachSentence( (sentence,formNum) => {
+				sentences.push(
+					(!langToggle)
+						? {base : sentence.primary, trans : sentence.secondary}
+						: {base : sentence.secondary, trans : sentence.primary}
+				);
+				sentenceFormStrs.push(
+					(dictionary._sLang.hasForm(catg,formNum[0]))
+						? '(' + capitalize(dictionary._sLang.formStr(catg,formNum[0])) + ') '
+						: ''
+				);
+			} );
+
+			// try find/highlight search frag in entry data
+			let highlightTitle = title.replaceAll(fragFind,fragReplace);
+			let highlightTitleTranslation = titleTranslation.replaceAll(fragFind,fragReplace);
+			// try find/highlight search frag in sentence data
+			let highlightSentences = [];
+			for (const sentence of sentences) {
+				highlightSentences.push({
+					base : sentence.base.replaceAll(fragFind,fragReplace),
+					trans : sentence.trans.replaceAll(fragFind,fragReplace)
+				});
+			}
+
+			// check if any part of entry contained frag
+			let containsSearchFrag = false;
+			if (highlightTitle != title && filters.searchIn.title) containsSearchFrag = true;
+			if (highlightTitleTranslation != titleTranslation && filters.searchIn.titleTranslation) containsSearchFrag = true;
+			for (let i = 0; i < sentences.length; i++) {
+				if (highlightSentences[i].base != sentences[i].base && filters.searchIn.sentences) containsSearchFrag = true;
+				if (highlightSentences[i].trans != sentences[i].trans && filters.searchIn.sentenceTranslations) containsSearchFrag = true;
+			}
+			let matchesCatg = false;
+			if (filters.catg.active.indexOf(catg.toLowerCase()) != -1) {
+				matchesCatg = true;
+			}
+			if (filters.catg.misc && filters.catg.active.indexOf(catg.toLowerCase()) != -1) {
+				matchesCatg = true;
+			}
+
+			if (title == 'acorn, black oak') {
+				console.log('READOUT: "acorn, black oak"');
+				console.log(catg, filters.catg.active);
+				console.log(filters.catg.active.indexOf(catg.toLowerCase()));
+			}
+
+			// if entry doesn't contain search frag, skip it
+			const matchesFilters = containsSearchFrag && matchesCatg;
+			if (fragment != '' && !matchesFilters && !includeNonmatches) return '';
+
+			// else start building element
+			let elemStr = '';
+
+			elemStr += '<div class="search-result">';
+				// first line is word, part of speech, translation
+				elemStr += '<div>';
+					elemStr += '<span class="search-result-title">' + trySubscript(highlightTitle) + '</span>';
+					elemStr += '<span class="search-result-catg">' + catg + '</span>';
+					elemStr += '<span class="search-result-translation">' + trySubscript(highlightTitleTranslation) + '</span>';
+				elemStr += '</div>';
+				// rest of lines are sentences
+				for (let i = 0; i < sentences.length; i++) {
+					elemStr += '<div>';
+						elemStr += '<span class="search-result-sentence">' + highlightSentences[i].base + '</span>';
+						elemStr += '<span class="search-result-sentence-translation">' + highlightSentences[i].trans + '</span>';
+					elemStr += '</div>';
+				}
+				// synonyms
+					//
+			elemStr += '</div>';
+
+			return elemStr;
+		}
+
+		function populateSearchResults (fragment = '') {
+			const t0_populate = performance.now();
+			let numWords = 0;
+
+			const container = document.getElementById('searchResults');
+			const fragFind    = !fragment ? undefined : (new RegExp('('+fragment+')', 'ig'));
+			const fragReplace = !fragment ? undefined : '<span class="highlight">$1</span>';
+
+			let elemStr = '';
+
+			console.log(`Searching fragment "${fragment}"...`);
+			dictionary.forEachWord((entry,word) => {
+				const result =  buildSearchResult(entry,word,fragment,fragFind,fragReplace);
+				elemStr += result;
+				if (result != '') numWords++;
+			});
+
+			container.innerHTML = elemStr;
+			console.log(`Built ${numWords} search results in ${performance.now()-t0_populate} ms.`);
+		}
 
 
 
@@ -215,12 +366,12 @@
 			switch (e.key) {
 			case '`': // [`] for dev action
 				console.log('dev action');
-				//
+				populateSearchResults('black');
 				break;
 			}
 		});
 
-        
+
 		console.log('Load time: ' + (Date.now() - t1) + ' ms');
 
 		/////////////////////////////////////////////////////////////////////

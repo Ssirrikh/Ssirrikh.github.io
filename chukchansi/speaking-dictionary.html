@@ -52,6 +52,7 @@
 		// 2.5 hrs: major spreadsheet fixes, script to ensure sentences contain at least one word from their entry
 		// 0.5 hrs: improve sentence-checker script and allow download .txt of results
 		// 0.5 hrs: clean up database to prep for supporting alternate spellings
+		// 0.5 hrs: run substring frequency analysis for eventual root/affix detection
 
 		//// TODO ////
 		//
@@ -733,6 +734,30 @@
 
 		init(dictionary);
 		console.log('Load time: ' + (Date.now() - t1) + ' ms');
+
+		const t0_substrs = performance.now();
+
+		let numWordsChk = 0;
+		let substrs = {};
+		let s; // temp
+		dictionary.forEachEntry(entry => {
+			entry.forEachSecondaryForm(synonyms => {
+				for (const word of synonyms) {
+					numWordsChk++;
+					for (let i = 1; i < word.length; i++) {
+						s = word.slice(0,i);
+						if (!substrs[s]) substrs[s] = 0;
+						substrs[s]++;
+					}
+				}
+			});
+		});
+		let substrsSorted = Object.keys(substrs).map(s => [s,substrs[s]]);
+		substrsSorted.sort((a,b) => a[1] < b[1]);
+
+		console.log(`Processed ${numWordsChk} chk words in ${performance.now()-t0_substrs} ms.`);
+		console.log(substrs);
+		console.log(substrsSorted);
 
 		/////////////////////////////////////////////////////////////////////
 	</script>
