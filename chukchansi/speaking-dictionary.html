@@ -53,6 +53,7 @@
 		// 0.5 hrs: improve sentence-checker script and allow download .txt of results
 		// 0.5 hrs: clean up database to prep for supporting alternate spellings
 		// 0.5 hrs: run substring frequency analysis for eventual root/affix detection
+		// 0.5 hrs: display all word forms in both eng-chk and chk-eng (do not assume any chk fluency at this time)
 
 		//// TODO ////
 		//
@@ -495,7 +496,8 @@
 			const sentenceFormStrs = [];
 			const synonyms		= entry.getPrimarySynonyms(word);
 
-			if (!langToggle) entry.forEachSecondaryForm( (synonyms,formNum) => {if (formNum > 1) wordForms.push([synonyms[0],formNum])} );
+			// if (!langToggle) entry.forEachSecondaryForm( (synonyms,formNum) => {if (formNum > 1) wordForms.push([synonyms[0],formNum])} );
+			entry.forEachSecondaryForm( (synonyms,formNum) => {if (formNum > 1) wordForms.push([synonyms[0],formNum])} );
 
 			entry.forEachSentence( (sentence,formNum) => {
 				// console.log(sentence,formNum);
@@ -539,7 +541,8 @@
 				}
 				for (let [synonym,formNum] of wordForms) {
 					elemStr += '<span class="dataRow">';
-						elemStr += '<span class="formName">' + capitalize(dictionary[langToggle?'_pLang':'_sLang'].formStr(catg,formNum)) + ':</span>';
+						// elemStr += '<span class="formName">' + capitalize(dictionary[langToggle?'_pLang':'_sLang'].formStr(catg,formNum)) + ':</span>';
+						elemStr += '<span class="formName">' + capitalize(dictionary['_sLang'].formStr(catg,formNum)) + ':</span>';
 						elemStr += '<span class="formWord">' + trySubscript(synonym) + '</span>';
 					elemStr += '</span>';
 				}
