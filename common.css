@@ -1,0 +1,196 @@
+
+/**** common.css ****/
+
+/* Common styling shared across entire site. */
+/* Includes themeing, destyling, flexbox utilities, and the shared navbar. */
+
+/* Website (C) 2026 Narayana "Kat" Adisasmito-Smith */
+/* Text and images from this site may not be used as training data for AI. */
+
+:root {
+    /**** shadows ****/
+
+    --edge-sharpness-shadow: drop-shadow(0 0 4px #0004);
+    --modal-shadow: drop-shadow(0 0 10px #0002);
+    --popout-shadow: (0 0 10px #0004);
+
+    /**** positioning ****/
+
+    --layer-background: -1; /* static backgrounds */
+    --layer-front: 2; /* elems that hover over content */
+    --layer-nav: 3; /* nav elements, and elements that hang from navbar */
+    --layer-overlay: 5; /* modals and overlays */
+
+    --thumbnail-position: center center / cover no-repeat;
+
+    /**** responsive layout and fluid typography ****/
+
+    /* dynamic units calculated mobile-first; see media queries for desktop layout */
+    --fluid-font-size: max(2.5vh, calc(1rem + 1.0vw));
+    /* --title-font-size: calc(1.17 * var(--fluid-font-size)); */
+}
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Times New Roman';
+}
+body {
+    /* background-color: var(--background-nav); */
+    font-size: var(--fluid-font-size);
+    /*overflow-x: hidden; /* 100vw overflows horizontally only on chrome; chrome scrollbars contribute to viewport size, but position themselves outside it, forcing it to expand */
+}
+
+/* unstyle elements */
+button {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: 1em;
+    font-weight: normal;
+}
+input,textarea,select {
+    font-size: 1em;
+}
+
+
+
+/**** FLEXBOX UTILITY ****/
+
+/* globally prevent shrinkage unless explicitly enabled */
+* {
+    flex-shrink: 0;
+}
+.flex-fill {
+    justify-content: center;
+    flex-grow: 1;
+}
+
+/* flexbox primitives */
+.flex-sep {
+    width: 0;
+    flex-grow: 1;
+}
+.flex-row {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+}
+.flex-col {
+    display: flex;
+    flex-direction: column !important;
+}
+.flex-adapt {
+    /* column on mobile, row on desktop */
+    display: flex;
+    flex-direction: column !important;
+    align-items: center;
+}
+.flex-adapt-reverse {
+    /* row on mobile, column on desktop */
+    display: flex;
+    flex-direction: row !important;
+    align-items: normal;
+    justify-content: center;
+}
+.flex-centered {
+    align-items: center;
+    justify-content: center;
+}
+
+/* flexbox shorthands for common combinations */
+.flex-separated-row {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+
+/**** BEHAVIOR ****/
+
+.no-scrollbar {
+    overflow: scroll; /* force scrollbars to be added to DOM */
+    -ms-overflow-style: none;  /* hide scrollbar for IE and Edge */
+    scrollbar-width: none;  /* hide scrollbar for Firefox */
+}
+.no-scrollbar::-webkit-scrollbar { display: none; } /* hide scrollbar for Chrome, Safari, and Opera */
+.no-wrap {
+    white-space: nowrap;
+}
+.hidden {
+    display: none !important;
+}
+
+
+
+/**** SITE LAYOUT ****/
+
+#main {
+    /* border: thin solid red; */
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+#progress {
+    --scroll: 10%;
+    background: linear-gradient(to right, var(--bg-highlight) var(--scroll), #222 0);
+    background-repeat: no-repeat;
+    height: 4px;
+}
+#content {
+    background-color: var(--bg-light);
+    background-color: var(--bg-white);
+
+    overflow: scroll;
+    min-height: 0;
+    flex-grow: 1;
+}
+
+
+
+
+/**** NAV BAR ****/
+
+#nav-bar {
+    /* position: fixed;
+    top: 0;
+    left: 0; */
+}
+
+
+
+/**** MEDIA QUERIES ****/
+
+@media (max-aspect-ratio: 5/4) { /* mobile mode */
+    /* all styling is mobile-first, but if an element requires specific overrides, those go here */
+    .desktop-only {
+        display: none;
+    }
+}
+@media (min-aspect-ratio: 5/4) { /* desktop mode */
+    :root {
+        /*  */
+    }
+    .flex-adapt {
+        display: flex;
+        flex-direction: row !important;
+        align-items: normal;
+        justify-content: center;
+    }
+    .flex-adapt-reverse {
+        display: flex;
+        flex-direction: column !important;
+        align-items: center;
+    }
+}
