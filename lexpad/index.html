@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = 'utf-8'>
+	<title>LexPad - Your Cross-Platform Lexicon Editor</title>
+    <meta name='robots' content='index, follow'>
+    <meta name='description' content='Work on your language&apos;s lexicon in a clean, modern interface with support for automated checks and formatting. Manage your data, then convert it into a print-ready dictionary or a searchable online dictionary, all from one cross-platform tool.'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, interactive-widget=resizes-content'>
+	<!-- interactive-widget=resizes-content necessary for any page with text input, so page updates to accomodate onscreen keyboard -->
+    <link rel='stylesheet' href='../common.css'>
+	<style>
+		:root {
+			--dark: #0d1117;
+			--primary: #2950e5;
+			--primary: #6a4fff;
+			--primary: #9582ff;
+    		--primary-selection: #2043c2;
+			--text-light: #fff;
+			--text-light: #ddd;
+			--text-light: #bbb;
+			--text-light: #cdf;
+
+			--gradient-dark: #030542;
+			--gradient-light: #6b56d4;
+			
+			--gradient-darker: #020327;
+			--gradient-medium: #483aa2;
+			--gradient-medium: #3a2f80;
+
+			--gradient-shadow: #03054233;
+		}
+
+		body {
+			color: var(--text-light);
+			background-color: var(--gradient-dark);
+			overflow: hidden;
+		}
+		h1 {
+			color: white;
+			font-size: 2em;
+		}
+
+		.icon {
+			border-radius: 0.25em;
+			width: 1.5em;
+			height: 1.5em;
+		}
+
+		#main {
+			overflow: overlay;
+			background: linear-gradient(to bottom, var(--gradient-dark), var(--gradient-light));
+			background: linear-gradient(to bottom, var(--gradient-darker), var(--gradient-medium));
+		}
+
+		/**** NAVBAR ****/
+
+		#navbar {
+			/* color: white; */
+			background-color: var(--dark);
+			border-bottom: thin solid #557;
+			font-size: 1em;
+			padding: 0 0.5em;
+			gap: 1em;
+		}
+		#navbar > ul {
+			list-style: none;
+			gap: 1em;
+		}
+		#navbar > ul > li {
+			padding: 1em 0.25em;
+		}
+		#navbar > ul > li:hover {
+			text-decoration: underline;
+		}
+
+		#nav-icon {
+			color: white;
+			background-color: var(--primary);
+			border-radius: 0 0.5em;
+			width: 2em;
+			height: 2em;
+			/* M 1 1 L 1 18 Q 1 23 6 23 L 23 23 L 23 6 Q 23 1 18 1 Z */
+		}
+		#nav-github {
+			border-radius: 0.5em;
+			width: 2em;
+			height: 2em;
+		}
+		#nav-github:hover {
+			filter: drop-shadow(0 0 8px #fffa);
+		}
+		#nav-github:focus-visible {
+			outline: medium solid white;
+		}
+
+		/**** CONTENT ****/
+
+		#content {
+			/* border: thin solid red; */
+			padding: 1em;
+			min-width: 20em;
+			max-width: 30em;
+			gap: 2em;
+			align-self: center;
+			text-align: center;
+		}
+
+		.download-options {
+			gap: 1em;
+		}
+		.download-button {
+			box-sizing: content-box;
+			color: white;
+			background-color: var(--primary);
+			border: medium solid transparent;
+			border-radius: 0.5em;
+			filter: drop-shadow(0 0 3px var(--gradient-shadow));
+			padding: 0.5em 1em;
+			min-width: 10em;
+			gap: 0.5em;
+		}
+		.download-button:hover {
+			background-color: var(--primary-selection);
+		}
+		.download-button:focus-visible {
+			border: medium solid var(--gradient-medium);
+			outline: medium solid white;
+		}
+
+		/* FOOTER */
+
+		#footer {
+			/* color: white; */
+			background-color: var(--primary);
+			background-color: var(--gradient-dark);
+			background-color: var(--dark);
+			border-top: thin solid var(--gradient-light);
+			padding: 0.25em 1em;
+			gap: 0.15em;
+			font-size: 0.8em;
+			text-align: center;
+		}
+
+		
+	</style>
+</head>
+<body>
+
+<div id='main' class='flex-col'>
+	<nav id='navbar' class='flex-row' role='navigation'>
+		<div id='nav-icon' class='flex-centered'>
+			<p>L</p>
+		</div>
+		<ul class='flex-row'>
+			<li><a>Home</a></li>
+			<li><a>Documentation</a></li>
+			<li><a>Getting Started</a></li>
+		</ul>
+		<div class='flex-sep'></div>
+		<button id='nav-github' class='flex-centered' title='Visit project on GitHub'>
+			<!-- octocat logo from Github @ https://github.com/ -->
+			<svg width='100%' height='100%' viewBox='0 0 24 24' fill='white'>
+    			<path d='M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z'></path>
+			</svg>
+		</button>
+	</nav>
+
+	<div id='content' class='flex-col flex-centered flex-fill'>
+		<h1>Welcome to LexPad</h1>
+		
+		<p>Work on your language's lexicon in a clean, modern interface with support for automated checks and formatting. Manage your data, then convert it into a print-ready dictionary or a searchable online dictionary, all from one cross-platform tool.</p>
+
+		<div class='flex-adapt download-options'>
+			<button class='flex-row download-button'>
+				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
+					<path d='M 1 1 l 0 10 l 10 0 l 0 -10 Z'/>
+					<path d='M 1 13 l 0 10 l 10 0 l 0 -10 Z'/>
+					<path d='M 13 1 l 0 10 l 10 0 l 0 -10 Z'/>
+					<path d='M 13 13 l 0 10 l 10 0 l 0 -10 Z'/>
+				</svg>
+				<p>Download for Windows</p>
+			</button>
+			<button class='flex-row download-button'>
+				<!-- apple logo svg from Tabler Icons @ https://tabler.io/icons -->
+				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
+					<path stroke='none' d='M0 0h24v24H0z' fill='none'/>
+					<path d='M15.079 5.999l.239 .012c1.43 .097 3.434 1.013 4.508 2.586a1 1 0 0 1 -.344 1.44c-.05 .028 -.372 .158 -.497 .217a4.15 4.15 0 0 0 -.722 .431c-.614 .461 -.948 1.009 -.942 1.694c.01 .885 .339 1.454 .907 1.846c.208 .143 .436 .253 .666 .33c.126 .043 .426 .116 .444 .122a1 1 0 0 1 .662 .942c0 2.621 -3.04 6.381 -5.286 6.381c-.79 0 -1.272 -.091 -1.983 -.315l-.098 -.031c-.463 -.146 -.702 -.192 -1.133 -.192c-.52 0 -.863 .06 -1.518 .237l-.197 .053c-.575 .153 -.964 .226 -1.5 .248c-2.749 0 -5.285 -5.093 -5.285 -9.072c0 -3.87 1.786 -6.92 5.286 -6.92c.297 0 .598 .045 .909 .128c.403 .107 .774 .26 1.296 .508c.787 .374 .948 .44 1.009 .44h.016c.03 -.003 .128 -.047 1.056 -.457c1.061 -.467 1.864 -.685 2.746 -.616l-.24 -.012z' />
+					<path d='M14 1a1 1 0 0 1 1 1a3 3 0 0 1 -3 3a1 1 0 0 1 -1 -1a3 3 0 0 1 3 -3z' />
+				</svg>
+				<p>Download for Mac</p>
+			</button>
+		</div>
+	</div>
+	
+	<footer id='footer' class='flex-col'>
+		<p>This software is free and open source under the GPL 3 liscence.</p>
+		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
+	</footer>
+</div>
+
+</body>
+</html>
