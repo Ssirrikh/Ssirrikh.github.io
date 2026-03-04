@@ -11,6 +11,7 @@
 	<style>
 		:root {
 			--dark: #0d1117;
+			--bg-medium: #1d2735;
 			--primary: #2950e5;
 			--primary: #6a4fff;
 			--primary: #9582ff;
@@ -20,6 +21,8 @@
 			--text-light: #bbb;
 			--text-light: #cdf;
 
+			--text-darkened: #abf;
+
 			--gradient-dark: #030542;
 			--gradient-light: #6b56d4;
 			
@@ -28,6 +31,10 @@
 			--gradient-medium: #3a2f80;
 
 			--gradient-shadow: #03054233;
+
+			--warning: #ff2951;
+			--warning: #e1002a;
+			--warning: #d12a2a;
 		}
 
 		body {
@@ -36,10 +43,14 @@
 			overflow: hidden;
 		}
 		h1 {
-			color: white;
+			/* color: white; */
+			/* color: var(--text-darkened); */
 			font-size: 2em;
 		}
 
+		.warning {
+			color: var(--warning);
+		}
 		.icon {
 			border-radius: 0.25em;
 			width: 1.5em;
@@ -57,6 +68,7 @@
 		#navbar {
 			/* color: white; */
 			background-color: var(--dark);
+			background-color: var(--bg-medium);
 			border-bottom: thin solid #557;
 			font-size: 1em;
 			padding: 0 0.5em;
@@ -127,10 +139,34 @@
 			outline: medium solid white;
 		}
 
+		#latest-version {
+			color: var(--text-darkened);
+		}
+
 		/* FOOTER */
+
+		#install-warning {
+			background-color: var(--dark);
+			background-color: var(--bg-medium);
+			border: thin solid var(--gradient-light);
+			/* border-radius: 0.5em; */
+			margin: 1em;
+			padding: 0.5em;
+			font-size: 1em;
+			max-width: 30em;
+			text-align: center;
+
+			align-self: center;
+			align-self: flex-end;
+		}
+		#install-warning a {
+			color: inherit;
+			color: var(--text-darkened);
+		}
 
 		#footer {
 			/* color: white; */
+			color: var(--text-darkened);
 			background-color: var(--primary);
 			background-color: var(--gradient-dark);
 			background-color: var(--dark);
@@ -190,6 +226,13 @@
 				<p>Download for Mac</p>
 			</button>
 		</div>
+
+		<p id='latest-version'>Latest build is Beta 0.0.1 (~200 MB)</p>
+	</div>
+
+	<div id='install-warning'>
+		<p>Your OS will probably block you from installing unregistered software. For now, here's how to <a href='./force-install'>get around that</a>, because $700 to register is a lot.</p>
+		<p class='warning'>Never do this with untrusted software!</p>
 	</div>
 	
 	<footer id='footer' class='flex-col'>
