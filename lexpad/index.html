@@ -12,14 +12,23 @@
 		:root {
 			--dark: #0d1117;
 			--bg-medium: #1d2735;
+			--bg-medium: #121921;
 			--primary: #2950e5;
 			--primary: #6a4fff;
 			--primary: #9582ff;
     		--primary-selection: #2043c2;
+
+			--border-grey: #557;
+
 			--text-light: #fff;
 			--text-light: #ddd;
 			--text-light: #bbb;
 			--text-light: #cdf;
+
+			/* colors from https://www.joshwcomeau.com/css/styling-ordered-lists-with-css-counters/ */
+			--bg-medium: #0d0f12;
+			--text-light: #e3e6e8;
+			--text-primary: #e6b3ff;
 
 			--text-darkened: #abf;
 
@@ -37,6 +46,9 @@
 			--warning: #d12a2a;
 		}
 
+		* {
+			font-family: sans-serif;
+		}
 		body {
 			color: var(--text-light);
 			background-color: var(--gradient-dark);
@@ -47,6 +59,9 @@
 			/* color: var(--text-darkened); */
 			font-size: 2em;
 		}
+		a {
+			color: var(--text-primary);
+		}
 
 		.warning {
 			color: var(--warning);
@@ -56,6 +71,8 @@
 			width: 1.5em;
 			height: 1.5em;
 		}
+
+		
 
 		#main {
 			overflow: overlay;
@@ -69,7 +86,7 @@
 			/* color: white; */
 			background-color: var(--dark);
 			background-color: var(--bg-medium);
-			border-bottom: thin solid #557;
+			border-bottom: thin solid var(--border-grey);
 			font-size: 1em;
 			padding: 0 0.5em;
 			gap: 1em;
@@ -83,6 +100,16 @@
 		}
 		#navbar > ul > li:hover {
 			text-decoration: underline;
+		}
+		#navbar > ul > li.active {
+			box-shadow: inset 0 3px 0 0 var(--text-primary) !important;
+		}
+		#navbar > ul > li.active:hover {
+			cursor: default;
+			text-decoration: none;
+		}
+		#navbar > ul > li > a {
+			color: var(--text-light);
 		}
 
 		#nav-icon {
@@ -112,6 +139,8 @@
 			padding: 1em;
 			min-width: 20em;
 			max-width: 30em;
+			min-height: 20em;
+			height: calc(100vh - 8em);
 			gap: 2em;
 			align-self: center;
 			text-align: center;
@@ -128,8 +157,9 @@
 			border-radius: 0.5em;
 			filter: drop-shadow(0 0 3px var(--gradient-shadow));
 			padding: 0.5em 1em;
-			min-width: 10em;
+			/* min-width: 8em; */
 			gap: 0.5em;
+			justify-content: center;
 		}
 		.download-button:hover {
 			background-color: var(--primary-selection);
@@ -139,9 +169,64 @@
 			outline: medium solid white;
 		}
 
+		.section {
+			padding: 1em;
+			/* gap: 1em; */
+		}
+		.section-dark {
+			background-color: var(--bg-medium);
+			border-top: thin solid var(--gradient-light);
+		}
+		.section-content-wrapper {
+			/* border: thin solid red; */
+			min-width: 20em;
+			max-width: 40em;
+			gap: 1em;
+			align-self: center;
+		}
+		.section-content-wrapper > h2 {
+			border-bottom: thin solid var(--border-grey);
+			padding: 0.25em 0.5em;
+			font-size: 1.7em;
+		}
+		.section-content {
+			padding: 0 1em;
+			gap: 1em;
+			line-height: 1.5em;
+		}
+		.section-content > h3 {
+			color: var(--text-primary);
+			font-size: 1.5em;
+			font-weight: 600;
+			/* margin: 1em 0; */
+			margin-top: 1em;
+		}
+		.section-content > ol {
+			padding-left: 2em;
+			gap: 0.5em;
+		}
+		.section-content > ol > li {
+			padding-left: 1em;
+		}
+		.section-content > ol > li::marker {
+			font-size: 1.2em;
+		}
+		.section-image {
+			background-color: var(--border-grey);
+			border: thin solid var(--text-light);
+			border-radius: 0.25em;
+			min-width: 16em;
+			width: 80%;
+			align-self: center;
+
+			/* min-height: 16em; */
+		}
+
 		#latest-version {
 			color: var(--text-darkened);
 		}
+
+		
 
 		/* FOOTER */
 
@@ -149,15 +234,19 @@
 			background-color: var(--dark);
 			background-color: var(--bg-medium);
 			border: thin solid var(--gradient-light);
+			border-bottom: none;
 			/* border-radius: 0.5em; */
-			margin: 1em;
+			border-radius: 0.25em 0.25em 0 0;
+			margin: 0 1em;
+			/* margin-bottom: 0; */
 			padding: 0.5em;
 			font-size: 1em;
+			font-size: 0.8em;
 			max-width: 30em;
 			text-align: center;
 
 			align-self: center;
-			align-self: flex-end;
+			/* align-self: flex-end; */
 		}
 		#install-warning a {
 			color: inherit;
@@ -188,7 +277,7 @@
 			<p>L</p>
 		</div>
 		<ul class='flex-row'>
-			<li><a>Home</a></li>
+			<li class='active'><a>Home</a></li>
 			<li><a>Documentation</a></li>
 			<li><a>Getting Started</a></li>
 		</ul>
@@ -204,7 +293,7 @@
 	<div id='content' class='flex-col flex-centered flex-fill'>
 		<h1>Welcome to LexPad</h1>
 		
-		<p>Work on your language's lexicon in a clean, modern interface with support for automated checks and formatting. Manage your data, then convert it into a print-ready dictionary or a searchable online dictionary, all from one cross-platform tool.</p>
+		<p>Edit your lexicon in a clean, modern interface with built-in media support. Record and edit data, use automated tools to catch and correct errors, then export a print-ready dictionary or searchable online version, all from one cross-platform tool.</p>
 
 		<div class='flex-adapt download-options'>
 			<button class='flex-row download-button'>
@@ -214,7 +303,7 @@
 					<path d='M 13 1 l 0 10 l 10 0 l 0 -10 Z'/>
 					<path d='M 13 13 l 0 10 l 10 0 l 0 -10 Z'/>
 				</svg>
-				<p>Download for Windows</p>
+				<p>For Windows</p>
 			</button>
 			<button class='flex-row download-button'>
 				<!-- apple logo svg from Tabler Icons @ https://tabler.io/icons -->
@@ -223,20 +312,57 @@
 					<path d='M15.079 5.999l.239 .012c1.43 .097 3.434 1.013 4.508 2.586a1 1 0 0 1 -.344 1.44c-.05 .028 -.372 .158 -.497 .217a4.15 4.15 0 0 0 -.722 .431c-.614 .461 -.948 1.009 -.942 1.694c.01 .885 .339 1.454 .907 1.846c.208 .143 .436 .253 .666 .33c.126 .043 .426 .116 .444 .122a1 1 0 0 1 .662 .942c0 2.621 -3.04 6.381 -5.286 6.381c-.79 0 -1.272 -.091 -1.983 -.315l-.098 -.031c-.463 -.146 -.702 -.192 -1.133 -.192c-.52 0 -.863 .06 -1.518 .237l-.197 .053c-.575 .153 -.964 .226 -1.5 .248c-2.749 0 -5.285 -5.093 -5.285 -9.072c0 -3.87 1.786 -6.92 5.286 -6.92c.297 0 .598 .045 .909 .128c.403 .107 .774 .26 1.296 .508c.787 .374 .948 .44 1.009 .44h.016c.03 -.003 .128 -.047 1.056 -.457c1.061 -.467 1.864 -.685 2.746 -.616l-.24 -.012z' />
 					<path d='M14 1a1 1 0 0 1 1 1a3 3 0 0 1 -3 3a1 1 0 0 1 -1 -1a3 3 0 0 1 3 -3z' />
 				</svg>
-				<p>Download for Mac</p>
+				<p>For Macintosh</p>
 			</button>
 		</div>
 
-		<p id='latest-version'>Latest build is Beta 0.0.1 (~200 MB)</p>
+		<p id='latest-version'>Beta 0.0.1 (~200 MB)</p>
 	</div>
 
-	<div id='install-warning'>
+	<!-- <div id='install-warning'>
 		<p>Your OS will probably block you from installing unregistered software. For now, here's how to <a href='./force-install'>get around that</a>, because $700 to register is a lot.</p>
 		<p class='warning'>Never do this with untrusted software!</p>
+	</div> -->
+
+	<div class='flex-col section section-dark'>
+		<div class='flex-col section-content-wrapper'>
+			<h2>LexPad Basics</h2>
+			<div class='flex-col section-content'>
+				<p>This section provides a quick overview of the software and its main featuers. For more details, look through the <a>documentation</a> (documentation page is still under construction).</p>
+				<p>Alternatively, the <a>Getting Started</a> page will walk you through installing LexPad and creating your first project. It also contains downloadable sample projects to help you get a feel for what a lexicon looks like.</p>
+				
+				<h3>The Project Tab</h3>
+				<p>Enter basic info about your language, including its alphabet. Type it here once, and it will be accessible everywhere, directly from the interface. No need for alt codes or excessive copy-pasting.</p>
+				<p>Statistics about your project are shown in this section. Any statistic can be clicked to jump to a relevant search in the Advanced Search Tab.</p>
+				<p>Document catgs and wordforms in your language. A "wordform" can represent any derived form (exactly what is up to you). In Wikchamni, wordforms might demonstrate grammatical cases, while in Spanish they might demonstrate verb conjugations.</p>
+				<img class='section-image' src='./source/lexpad-0.0.0-project-tab.png' alt='Screenshot showing Project Tab of software.' loading='lazy'>
+				
+				<h3>The Lexicon Tab</h3>
+				<p>The lexicon features a live search in L1 or L2 that filters results as you type. Icons let you see what each entry contains at a glance.</p>
+				<p>Entries have built-in media support. Attach images and view them immediately. Attach audio files and simply click to play them.</p>
+				<p>Data is organized into 3 sections: wordforms, example sentences, and notes. The Consistency Tab contains a script that helps you check for L2 words that appear in sentences but were never recorded as a wordform.</p>
+				<img class='section-image' src='./source/lexpad-0.0.0-lexicon-tab.png' alt='Screenshot showing Lexicon Tab of software.' loading='lazy'>
+				
+				<h3>The Advanced Search Tab</h3>
+				<p>The advanced search gives you fine-grained control over what kinds of entries to search and which datafields to search in.</p>
+				<p>Search filters allow you to control which catg(s) to search in, or to filter entries that include/exclude certain datafields. This can, for example, allow you to search for "all verbs that don't have audio attached".</p>
+				<p>Once a search is submitted, you can click any search to jump directly to the corresponding entry in the Lexicon Tab.</p>
+				<img class='section-image' src='./source/lexpad-0.0.0-search-tab.png' alt='Screenshot showing Advanced Search Tab of software.' loading='lazy'>
+				
+				<h3>The Consistency Tab</h3>
+				<p>LexPad uses automated scripts to flag inconsistencies in your database, which can help you catch and correct errors. Each script's output can be exported into a text file for review and documentation.</p>
+				<ol class='flex-col'>
+					<li>The media usage checker looks for missing or unused media. See which files haven't been attached to an entry yet, or which files may have been accidentally moved.</li>
+					<li>The sentence checker looks for L2 words that show up in a sentence, but were never recorded as a wordform. This can be helpful for catching typos, or flagging data that has yet to be added to an entry. Proper names, frozen phrases, and anything else you don't necessarily want to add to the lexicon can be excluded from this checker by entering them into the ignorelist.</li>
+				</ol>
+				<img class='section-image' src='./source/lexpad-0.0.0-consistency-tab.png' alt='Screenshot showing Consistency Tab of software.' loading='lazy'>
+				
+			</div>
+		</div>
 	</div>
 	
 	<footer id='footer' class='flex-col'>
-		<p>This software is free and open source under the GPL 3 liscence.</p>
+		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 liscence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
 	</footer>
 </div>
