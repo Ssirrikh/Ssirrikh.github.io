@@ -62,6 +62,9 @@
 		a {
 			color: var(--text-primary);
 		}
+		a:hover {
+			color: var(--gradient-light);
+		}
 
 		.warning {
 			color: var(--warning);
@@ -101,6 +104,9 @@
 		#navbar > ul > li:hover {
 			text-decoration: underline;
 		}
+		#navbar > ul > li:focus-visible {
+			outline: medium solid white;
+		}
 		#navbar > ul > li.active {
 			box-shadow: inset 0 3px 0 0 var(--text-primary) !important;
 		}
@@ -126,7 +132,7 @@
 			height: 2em;
 		}
 		#nav-github:hover {
-			filter: drop-shadow(0 0 8px #fffa);
+			filter: drop-shadow(0 0 8px #fff8);
 		}
 		#nav-github:focus-visible {
 			outline: medium solid white;
@@ -266,6 +272,35 @@
 			text-align: center;
 		}
 
+		#jump-to-top {
+			color: var(--text-light);
+			background-color: var(--primary);
+			border: thin solid var(--text-light);
+			border-radius: 1em;
+			width: 2em;
+			height: 2em;
+			position: fixed;
+			bottom: 1.5em;
+			right: 1.5em;
+		}
+		#jump-to-top::after {
+			content: '↑';
+			content: '';
+			border-top: medium solid var(--text-light);
+			border-left: medium solid var(--text-light);
+			transform: translate(0,25%) rotate(45deg);
+			width: 1em;
+			height: 1em;
+			font-size: 0.7em;
+		}
+		#jump-to-top:hover {
+			filter: drop-shadow(0 0 8px #fff6);
+			/* background-color: var(--gradient-light); */
+		}
+		#jump-to-top:focus-visible {
+			outline: medium solid white;
+		}
+
 		
 	</style>
 </head>
@@ -293,26 +328,26 @@
 	<div id='content' class='flex-col flex-centered flex-fill'>
 		<h1>Welcome to LexPad</h1>
 		
-		<p>Edit your lexicon in a clean, modern interface with built-in media support. Record and edit data, use automated tools to catch and correct errors, then export a print-ready dictionary or searchable online version, all from one cross-platform tool.</p>
+		<p>Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary.<br>All from one cross-platform tool.</p>
 
 		<div class='flex-adapt download-options'>
-			<button class='flex-row download-button'>
+			<button class='flex-row download-button' title='Download LexPad for Windows'>
 				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
 					<path d='M 1 1 l 0 10 l 10 0 l 0 -10 Z'/>
 					<path d='M 1 13 l 0 10 l 10 0 l 0 -10 Z'/>
 					<path d='M 13 1 l 0 10 l 10 0 l 0 -10 Z'/>
 					<path d='M 13 13 l 0 10 l 10 0 l 0 -10 Z'/>
 				</svg>
-				<p>For Windows</p>
+				<p aria-hidden='true'>For Windows</p>
 			</button>
-			<button class='flex-row download-button'>
+			<button class='flex-row download-button' title='Download LexPad for Mac'>
 				<!-- apple logo svg from Tabler Icons @ https://tabler.io/icons -->
 				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
 					<path stroke='none' d='M0 0h24v24H0z' fill='none'/>
 					<path d='M15.079 5.999l.239 .012c1.43 .097 3.434 1.013 4.508 2.586a1 1 0 0 1 -.344 1.44c-.05 .028 -.372 .158 -.497 .217a4.15 4.15 0 0 0 -.722 .431c-.614 .461 -.948 1.009 -.942 1.694c.01 .885 .339 1.454 .907 1.846c.208 .143 .436 .253 .666 .33c.126 .043 .426 .116 .444 .122a1 1 0 0 1 .662 .942c0 2.621 -3.04 6.381 -5.286 6.381c-.79 0 -1.272 -.091 -1.983 -.315l-.098 -.031c-.463 -.146 -.702 -.192 -1.133 -.192c-.52 0 -.863 .06 -1.518 .237l-.197 .053c-.575 .153 -.964 .226 -1.5 .248c-2.749 0 -5.285 -5.093 -5.285 -9.072c0 -3.87 1.786 -6.92 5.286 -6.92c.297 0 .598 .045 .909 .128c.403 .107 .774 .26 1.296 .508c.787 .374 .948 .44 1.009 .44h.016c.03 -.003 .128 -.047 1.056 -.457c1.061 -.467 1.864 -.685 2.746 -.616l-.24 -.012z' />
 					<path d='M14 1a1 1 0 0 1 1 1a3 3 0 0 1 -3 3a1 1 0 0 1 -1 -1a3 3 0 0 1 3 -3z' />
 				</svg>
-				<p>For Macintosh</p>
+				<p aria-hidden='true'>For Macintosh</p>
 			</button>
 		</div>
 
@@ -338,14 +373,14 @@
 				<img class='section-image' src='./source/lexpad-0.0.0-project-tab.png' alt='Screenshot showing Project Tab of software.' loading='lazy'>
 				
 				<h3>The Lexicon Tab</h3>
-				<p>The lexicon features a live search in L1 or L2 that filters results as you type. Icons let you see what each entry contains at a glance.</p>
-				<p>Entries have built-in media support. Attach images and view them immediately. Attach audio files and simply click to play them.</p>
+				<p>The lexicon features a live search in L1 or L2 that filters results as you type, with icons that let you see what each entry contains at a glance.</p>
+				<p>LexPad has built-in media support. If you attach an image, you'll see it right away. If you attach audio files, you can play them immediately with the press of a button.</p>
 				<p>Data is organized into 3 sections: wordforms, example sentences, and notes. The Consistency Tab contains a script that helps you check for L2 words that appear in sentences but were never recorded as a wordform.</p>
 				<img class='section-image' src='./source/lexpad-0.0.0-lexicon-tab.png' alt='Screenshot showing Lexicon Tab of software.' loading='lazy'>
 				
 				<h3>The Advanced Search Tab</h3>
 				<p>The advanced search gives you fine-grained control over what kinds of entries to search and which datafields to search in.</p>
-				<p>Search filters allow you to control which catg(s) to search in, or to filter entries that include/exclude certain datafields. This can, for example, allow you to search for "all verbs that don't have audio attached".</p>
+				<p>Use filters to search by catg, or include/exclude entries with certain attachments. This can, for example, allow you to search for "all verbs ending in '-ing' that don't have audio attached".</p>
 				<p>Once a search is submitted, you can click any search to jump directly to the corresponding entry in the Lexicon Tab.</p>
 				<img class='section-image' src='./source/lexpad-0.0.0-search-tab.png' alt='Screenshot showing Advanced Search Tab of software.' loading='lazy'>
 				
@@ -353,7 +388,7 @@
 				<p>LexPad uses automated scripts to flag inconsistencies in your database, which can help you catch and correct errors. Each script's output can be exported into a text file for review and documentation.</p>
 				<ol class='flex-col'>
 					<li>The media usage checker looks for missing or unused media. See which files haven't been attached to an entry yet, or which files may have been accidentally moved.</li>
-					<li>The sentence checker looks for L2 words that show up in a sentence, but were never recorded as a wordform. This can be helpful for catching typos, or flagging data that has yet to be added to an entry. Proper names, frozen phrases, and anything else you don't necessarily want to add to the lexicon can be excluded from this checker by entering them into the ignorelist.</li>
+					<li>The sentence checker looks for L2 words that show up in a sentence, but were never recorded as a wordform. This can be helpful for catching typos, or flagging data that has yet to be added to an entry. (Proper names, frozen phrases, and anything else you don't necessarily want to add to the lexicon can be excluded from this checker by entering them into the ignorelist.)</li>
 				</ol>
 				<img class='section-image' src='./source/lexpad-0.0.0-consistency-tab.png' alt='Screenshot showing Consistency Tab of software.' loading='lazy'>
 				
@@ -365,7 +400,28 @@
 		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 liscence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
 	</footer>
+
+	<button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button>
 </div>
+
+<script type='text/javascript'>
+	const eCTA = document.querySelector('#content');
+	const eMain = document.querySelector('#main');
+	const eJumpToTop = document.querySelector('#jump-to-top');
+
+	eJumpToTop.onclick = evt => {
+		// document.querySelector('#navbar').scrollIntoView({ behavior: 'smooth' });
+		eMain.scroll({ top: 0, behavior: 'smooth' });
+		// TODO: focus() on top-level element
+	};
+	eMain.onscroll = evt => {
+		if (eMain.scrollTop > eCTA.scrollHeight) {
+			eJumpToTop.classList.remove('hidden');
+		} else {
+			eJumpToTop.classList.add('hidden');
+		}
+	};
+</script>
 
 </body>
 </html>
