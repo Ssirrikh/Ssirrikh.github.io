@@ -4,15 +4,18 @@
 	<meta charset = 'utf-8'>
 	<title>LexPad - Your Cross-Platform Lexicon Editor</title>
     <meta name='robots' content='index, follow'>
-    <meta name='description' content='Work on your language&apos;s lexicon in a clean, modern interface with support for automated checks and formatting. Manage your data, then convert it into a print-ready dictionary or a searchable online dictionary, all from one cross-platform tool.'>
+    <meta name='description' content='Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary. All from one cross-platform tool.'>
 	<meta name='viewport' content='width=device-width, initial-scale=1, interactive-widget=resizes-content'>
 	<!-- interactive-widget=resizes-content necessary for any page with text input, so page updates to accomodate onscreen keyboard -->
     <link rel='stylesheet' href='../common.css'>
 	<style>
 		:root {
+			/* https://www.joshwcomeau.com/css/styling-ordered-lists-with-css-counters/ */
+
 			--dark: #0d1117;
-			--bg-medium: #1d2735;
 			--bg-medium: #121921;
+			--bg-medium: #0d0f12;
+
 			--primary: #2950e5;
 			--primary: #6a4fff;
 			--primary: #9582ff;
@@ -20,30 +23,21 @@
 
 			--border-grey: #557;
 
-			--text-light: #fff;
-			--text-light: #ddd;
-			--text-light: #bbb;
-			--text-light: #cdf;
-
-			/* colors from https://www.joshwcomeau.com/css/styling-ordered-lists-with-css-counters/ */
-			--bg-medium: #0d0f12;
 			--text-light: #e3e6e8;
 			--text-primary: #e6b3ff;
-
 			--text-darkened: #abf;
 
-			--gradient-dark: #030542;
-			--gradient-light: #6b56d4;
-			
 			--gradient-darker: #020327;
-			--gradient-medium: #483aa2;
+			--gradient-dark: #030542;
 			--gradient-medium: #3a2f80;
-
+			--gradient-light: #6b56d4;
 			--gradient-shadow: #03054233;
 
-			--warning: #ff2951;
-			--warning: #e1002a;
 			--warning: #d12a2a;
+
+			--content-min-width: 20em;
+			--content-cta-width: 30em;
+			--content-max-width: 40em;
 		}
 
 		* {
@@ -140,11 +134,11 @@
 
 		/**** CONTENT ****/
 
-		#content {
+		#section-cta {
 			/* border: thin solid red; */
 			padding: 1em;
-			min-width: 20em;
-			max-width: 30em;
+			min-width: var(--content-min-width);
+			max-width: var(--content-cta-width);
 			min-height: 20em;
 			height: calc(100vh - 8em);
 			gap: 2em;
@@ -177,7 +171,6 @@
 
 		.section {
 			padding: 1em;
-			/* gap: 1em; */
 		}
 		.section-dark {
 			background-color: var(--bg-medium);
@@ -185,8 +178,8 @@
 		}
 		.section-content-wrapper {
 			/* border: thin solid red; */
-			min-width: 20em;
-			max-width: 40em;
+			min-width: var(--content-min-width);
+			max-width: var(--content-max-width);
 			gap: 1em;
 			align-self: center;
 		}
@@ -307,14 +300,14 @@
 <body>
 
 <div id='main' class='flex-col'>
-	<nav id='navbar' class='flex-row' role='navigation'>
-		<div id='nav-icon' class='flex-centered'>
-			<p>L</p>
+	<nav id='navbar' class='flex-row' role='navigation' aria-label='Top Level'>
+		<div id='nav-icon' class='flex-centered' aria-label='LexPad'>
+			<p aria-hidden='true'>L</p>
 		</div>
 		<ul class='flex-row'>
 			<li class='active'><a>Home</a></li>
-			<li><a>Documentation</a></li>
-			<li><a>Getting Started</a></li>
+			<li><a href='./documentation'>Documentation</a></li>
+			<li><a href='./getting-started'>Getting Started</a></li>
 		</ul>
 		<div class='flex-sep'></div>
 		<button id='nav-github' class='flex-centered' title='Visit project on GitHub'>
@@ -325,10 +318,10 @@
 		</button>
 	</nav>
 
-	<div id='content' class='flex-col flex-centered flex-fill'>
+	<div id='section-cta' class='flex-col flex-centered flex-fill no-scrollbar'>
 		<h1>Welcome to LexPad</h1>
 		
-		<p>Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary.<br>All from one cross-platform tool.</p>
+		<p>Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary. <span class='no-wrap'>All from one cross-platform tool.</span></p>
 
 		<div class='flex-adapt download-options'>
 			<button class='flex-row download-button' title='Download LexPad for Windows'>
@@ -354,13 +347,8 @@
 		<p id='latest-version'>Beta 0.0.1 (~200 MB)</p>
 	</div>
 
-	<!-- <div id='install-warning'>
-		<p>Your OS will probably block you from installing unregistered software. For now, here's how to <a href='./force-install'>get around that</a>, because $700 to register is a lot.</p>
-		<p class='warning'>Never do this with untrusted software!</p>
-	</div> -->
-
 	<div class='flex-col section section-dark'>
-		<div class='flex-col section-content-wrapper'>
+		<article class='flex-col section-content-wrapper'>
 			<h2>LexPad Basics</h2>
 			<div class='flex-col section-content'>
 				<p>This section provides a quick overview of the software and its main featuers. For more details, look through the <a>documentation</a> (documentation page is still under construction).</p>
@@ -381,7 +369,7 @@
 				<h3>The Advanced Search Tab</h3>
 				<p>The advanced search gives you fine-grained control over what kinds of entries to search and which datafields to search in.</p>
 				<p>Use filters to search by catg, or include/exclude entries with certain attachments. This can, for example, allow you to search for "all verbs ending in '-ing' that don't have audio attached".</p>
-				<p>Once a search is submitted, you can click any search to jump directly to the corresponding entry in the Lexicon Tab.</p>
+				<p>Once a search is submitted, you can click any search result to jump directly to the corresponding entry in the Lexicon Tab.</p>
 				<img class='section-image' src='./source/lexpad-0.0.0-search-tab.png' alt='Screenshot showing Advanced Search Tab of software.' loading='lazy'>
 				
 				<h3>The Consistency Tab</h3>
@@ -393,11 +381,11 @@
 				<img class='section-image' src='./source/lexpad-0.0.0-consistency-tab.png' alt='Screenshot showing Consistency Tab of software.' loading='lazy'>
 				
 			</div>
-		</div>
+		</article>
 	</div>
 	
 	<footer id='footer' class='flex-col'>
-		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 liscence</span></a>.</p>
+		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 licence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
 	</footer>
 
@@ -405,7 +393,7 @@
 </div>
 
 <script type='text/javascript'>
-	const eCTA = document.querySelector('#content');
+	const eCTA = document.querySelector('#section-cta');
 	const eMain = document.querySelector('#main');
 	const eJumpToTop = document.querySelector('#jump-to-top');
 
