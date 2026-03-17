@@ -34,6 +34,7 @@
 			--gradient-shadow: #03054233;
 
 			--warning: #d12a2a;
+			--bg-warning: #130309;
 
 			--content-min-width: 20em;
 			--content-cta-width: 30em;
@@ -181,12 +182,22 @@
 			background-color: var(--bg-medium);
 			border-top: thin solid var(--gradient-light);
 		}
+		.section-notice {
+			background-color: var(--bg-warning);
+			border-left: medium solid var(--warning);
+			padding: 1em;
+			padding-left: 1.5em;
+			gap: 1em;
+		}
 		.section-content-wrapper {
 			/* border: thin solid red; */
 			min-width: var(--content-min-width);
 			max-width: var(--content-max-width);
 			gap: 1em;
 			align-self: center;
+		}
+		.section-content-wrapper + .section-content-wrapper {
+			margin-top: 3em;
 		}
 		.section-content-wrapper > h2 {
 			border-bottom: thin solid var(--border-grey);
@@ -311,9 +322,9 @@
 		</div>
 		<!-- <div class='nav-adaptive-wrapper'> -->
 			<ul class='flex-row'>
-				<li class='active'><a>Home</a></li>
+				<li><a href='./'>Home</a></li>
 				<li><a href='./documentation'>Documentation</a></li>
-				<li><a href='./getting-started'>Getting Started</a></li>
+				<li class='active'><a>Getting Started</a></li>
 			</ul>
 		<!-- </div> -->
 		<div class='flex-sep'></div>
@@ -325,68 +336,72 @@
 		</button>
 	</nav>
 
-	<div id='section-cta' class='flex-col flex-centered flex-fill no-scrollbar'>
-		<h1>Welcome to LexPad</h1>
-		
-		<p>Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary. <span class='no-wrap'>All from one cross-platform tool.</span></p>
-
-		<div class='flex-adapt download-options'>
-			<button class='flex-row download-button' title='Download LexPad for Windows'>
-				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
-					<path d='M 1 1 l 0 10 l 10 0 l 0 -10 Z'/>
-					<path d='M 1 13 l 0 10 l 10 0 l 0 -10 Z'/>
-					<path d='M 13 1 l 0 10 l 10 0 l 0 -10 Z'/>
-					<path d='M 13 13 l 0 10 l 10 0 l 0 -10 Z'/>
-				</svg>
-				<p aria-hidden='true'>For Windows</p>
-			</button>
-			<button class='flex-row download-button' title='Download LexPad for Mac'>
-				<!-- apple logo svg from Tabler Icons @ https://tabler.io/icons -->
-				<svg viewBox='0 0 24 24' fill='currentColor' class='icon'>
-					<path stroke='none' d='M0 0h24v24H0z' fill='none'/>
-					<path d='M15.079 5.999l.239 .012c1.43 .097 3.434 1.013 4.508 2.586a1 1 0 0 1 -.344 1.44c-.05 .028 -.372 .158 -.497 .217a4.15 4.15 0 0 0 -.722 .431c-.614 .461 -.948 1.009 -.942 1.694c.01 .885 .339 1.454 .907 1.846c.208 .143 .436 .253 .666 .33c.126 .043 .426 .116 .444 .122a1 1 0 0 1 .662 .942c0 2.621 -3.04 6.381 -5.286 6.381c-.79 0 -1.272 -.091 -1.983 -.315l-.098 -.031c-.463 -.146 -.702 -.192 -1.133 -.192c-.52 0 -.863 .06 -1.518 .237l-.197 .053c-.575 .153 -.964 .226 -1.5 .248c-2.749 0 -5.285 -5.093 -5.285 -9.072c0 -3.87 1.786 -6.92 5.286 -6.92c.297 0 .598 .045 .909 .128c.403 .107 .774 .26 1.296 .508c.787 .374 .948 .44 1.009 .44h.016c.03 -.003 .128 -.047 1.056 -.457c1.061 -.467 1.864 -.685 2.746 -.616l-.24 -.012z' />
-					<path d='M14 1a1 1 0 0 1 1 1a3 3 0 0 1 -3 3a1 1 0 0 1 -1 -1a3 3 0 0 1 3 -3z' />
-				</svg>
-				<p aria-hidden='true'>For Macintosh</p>
-			</button>
-		</div>
-
-		<p id='latest-version'>Beta 0.0.1 (~200 MB)</p>
-	</div>
-
 	<div class='flex-col section section-dark'>
-		<article class='flex-col section-content-wrapper'>
-			<h2>LexPad Basics</h2>
+		<div class='flex-col section-content-wrapper'>
+			<h1>Getting Started With LexPad</h1>
 			<div class='flex-col section-content'>
-				<p>This section provides a quick overview of the software and its main featuers. For more details, look through the <a href='./documentation'>documentation</a> (documentation page is still under construction).</p>
-				<p>Alternatively, the <a href='./getting-started'>Getting Started</a> page will walk you through installing LexPad and creating your first project. It also contains downloadable sample projects to help you get a feel for what a lexicon looks like.</p>
+				<p>This section will walk you through the process of installing LexPad and creating your first project. Alternatively, you can download one of these sample projects to try out the software with an existing lexicon.</p>
+                <ol class='flex-col'>
+                    <li><a href='./sample-projects/wikchamni.zip' download>Sample project: Wikchamni</a></li>
+                    <li><a href='./sample-projects/chukchansi.zip' download>Sample project: Chukchansi</a></li>
+                    <li><a href='./sample-projects/spanish.zip' download>Sample project: Spanish</a></li>
+                </ol>
+			</div>
+		</div>
+		<article class='flex-col section-content-wrapper'>
+			<h2>Installing LexPad</h2>
+			<div class='flex-col section-content'>
+				<div class='flex-col section-notice'>
+					<p>Your OS will warn you about installing untrusted software. Signing costs <span class='no-wrap'>$700/yr</span>, which is expensive for a free project in its beta phase. The installation instructions explain how to mark LexPad as trusted and run it anyways.</p>
+					<p class='warning'>Never do this for software unless you know you can trust the author!</p>
+				</div>
+
+				<h3>Installing LexPad on Windows</h3>
+                <ol class='flex-col'>
+                    <li>Download the Windows installer <a>here</a> if you haven't already.</li>
+                    <li>Double-click the installer and follow the onscreen prompts.</li>
+                    <li>If a desktop shortcut was created during installation, right-click it and select "Open file location", then find LexPad.exe. Otherwise, type "%appdata%" in the address bar of File Explorer and navigate to AppData/Local/LexPad. Open the folder with a name like "app-0.0.123" and find LexPad.exe.</li>
+					<li>Right-click LexPad.exe and select "Properties". The properties window should have a checkbox near the bottom labeled "Unblock". Click it, then click "Apply" to mark the app as trusted.</li>
+					<li>Success! You should now be able to open the app normally.</li>
+                </ol>
+				<p>If a desktop shortcut wasn't created during installation, you can create one yourself. Hold shift and right-click LexPad.exe, then select "Create a shortcut".</p>
 				
-				<h3>The Project Tab</h3>
-				<p>Enter basic info about your language, including its alphabet. Type it here once, and it will be accessible everywhere, directly from the interface. No need for alt codes or excessive copy-pasting.</p>
-				<p>Statistics about your project are shown in this section. Any statistic can be clicked to jump to a relevant search in the Advanced Search Tab.</p>
-				<p>Document catgs and wordforms in your language. A "wordform" can represent any derived form (exactly what is up to you). In Wikchamni, wordforms might demonstrate grammatical cases, while in Spanish they might demonstrate verb conjugations.</p>
-				<img class='section-image' src='./source/lexpad-0.0.0-project-tab.png' alt='Screenshot showing Project Tab of software.' loading='lazy'>
-				
-				<h3>The Lexicon Tab</h3>
-				<p>The lexicon features a live search in L1 or L2 that filters results as you type, with icons that let you see what each entry contains at a glance.</p>
-				<p>LexPad has built-in media support. If you attach an image, you'll see it right away. If you attach audio files, you can play them immediately with the press of a button.</p>
-				<p>Data is organized into 3 sections: wordforms, example sentences, and notes. The Consistency Tab contains a script that helps you check for L2 words that appear in sentences but were never recorded as a wordform.</p>
-				<img class='section-image' src='./source/lexpad-0.0.0-lexicon-tab.png' alt='Screenshot showing Lexicon Tab of software.' loading='lazy'>
-				
-				<h3>The Advanced Search Tab</h3>
-				<p>The advanced search gives you fine-grained control over what kinds of entries to search and which datafields to search in.</p>
-				<p>Use filters to search by catg, or include/exclude entries with certain attachments. This can, for example, allow you to search for "all verbs ending in '-ing' that don't have audio attached".</p>
-				<p>Once a search is submitted, you can click any search result to jump directly to the corresponding entry in the Lexicon Tab.</p>
-				<img class='section-image' src='./source/lexpad-0.0.0-search-tab.png' alt='Screenshot showing Advanced Search Tab of software.' loading='lazy'>
-				
-				<h3>The Consistency Tab</h3>
-				<p>LexPad uses automated scripts to flag inconsistencies in your database, which can help you catch and correct errors. Each script's output can be exported into a text file for review and documentation.</p>
+				<h3>Installing LexPad on Macintosh</h3>
+				<p>These instructions were adapted from <a href='https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac'>Apple's official help page.</a></p>
 				<ol class='flex-col'>
-					<li>The media usage checker looks for missing or unused media. See which files haven't been attached to an entry yet, or which files may have been accidentally moved.</li>
-					<li>The sentence checker looks for L2 words that show up in a sentence, but were never recorded as a wordform. This can be helpful for catching typos, or flagging data that has yet to be added to an entry. (Proper names, frozen phrases, and anything else you don't necessarily want to add to the lexicon can be excluded from this checker by entering them into the ignorelist.)</li>
+                    <li>Download the Mac package file <a>here</a> if you haven't already.</li>
+                    <li>Double-click the package file and follow the onscreen prompts.</li>
+					<li>After LexPad is installed, open it once. You should get a warning about untrusted software. Close the warning.</li>
+                    <li>Open the Apple menu and select "System Settings", then click "Privacy and Security" in the sidebar of the window.</li>
+					<li>Find LexPad in the "Security" section. Click "Open", then click "Open Anyway". Enter your login password to mark the app as trusted.</li>
+					<li>Success! You should now be able to open the app normally.</li>
+                </ol>
+			</div>
+		</article>
+		<article class='flex-col section-content-wrapper'>
+			<h2>Creating Your First Lexicon</h2>
+			<div class='flex-col section-content'>
+				<h3>Creating a New Project</h3>
+				<ol class='flex-col'>
+					<li>First, create a folder to store your project in.</li>
+					<li>Open LexPad, then click "New Project" in the welcome screen or the app menu.</li>
+					<li>Select the directory you created, then click "Create".</li>
+					<li>Success! Your new project will open automatically.</li>
 				</ol>
-				<img class='section-image' src='./source/lexpad-0.0.0-consistency-tab.png' alt='Screenshot showing Consistency Tab of software.' loading='lazy'>
-				
+				<p>You can rename your project file, but make sure to save it and close LexPad before doing so.</p>
+				<p>Placing multiple projects in the same folder causes them to share their media assets. This can be helpful for studying subsets of your data or storing backup copies, but will make it hard to keep track of things if you mix lexicons from multiple languages.</p>
+
+				<h3>Creating an New Entry</h3>
+				<ol class='flex-col'>
+					<li>Switch to the Lexicon Tab and click "New Entry" in the bottom left corner. Select the entry's catg / part of speech from the dropdown, or "Create New Catg".</li>
+					<li>L1 words (generally english) are entered in the header. You can include multiple synonyms or spelling variations by separating them with semicolons. For example, typing "run; sprint" will add both "run" and "sprint" to L1. Similarly, typing "color; colour" will add both spelling variations.</li>
+					<li>Add L2 word data to the "Wordforms" section. If words of this catg have more than one form (grammatical case, conjugations, etc), use the dropdown menu to select one. This section also supports synonyms and spelling variations, with the same semicolon notation.</li>
+					<li>The "Sentences" section holds sentences, phrases, and other examples of L2 data. Use the "Eng" field for gloss, translation, etc.</li>
+					<li>Only generic notes are currently supported, but multiple types will eventually be added. For now, type labels (ie "Anthropology: ...") in your notes so they can be auto-labeled later.</li>
+					<li>Any number of images can be attached to entries. Click the image square in the header to open the image manager.</li>
+					<li>Any number of audio can be attached to each wordform and each sentence. Click the plus icon to attach a file, then click the audio icon to play it. You can also use the three-dots menu on the right to open the audio manager.</li>
+				</ol>
+				<p>Since each part of speech may have a different set of wordforms associated with it, case/form labels will be lost when an entry's catg is changed.</p>
 			</div>
 		</article>
 	</div>
@@ -395,28 +410,7 @@
 		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 licence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
 	</footer>
-
-	<button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button>
 </div>
-
-<script type='text/javascript'>
-	const eCTA = document.querySelector('#section-cta');
-	const eMain = document.querySelector('#main');
-	const eJumpToTop = document.querySelector('#jump-to-top');
-
-	eJumpToTop.onclick = evt => {
-		// document.querySelector('#navbar').scrollIntoView({ behavior: 'smooth' });
-		eMain.scroll({ top: 0, behavior: 'smooth' });
-		// TODO: focus() on top-level element
-	};
-	eMain.onscroll = evt => {
-		if (eMain.scrollTop > eCTA.scrollHeight) {
-			eJumpToTop.classList.remove('hidden');
-		} else {
-			eJumpToTop.classList.add('hidden');
-		}
-	};
-</script>
 
 </body>
 </html>
