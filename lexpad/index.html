@@ -104,6 +104,8 @@
 
 		/**** NAVBAR ****/
 
+		/* navbar assumes it's inside screen-width flex-col */
+
 		#navbar {
 			background-color: var(--bg-medium);
 			border-bottom: thin solid var(--border-grey);
@@ -329,6 +331,7 @@
 			background-color: var(--primary);
 			border: thin solid var(--text-light);
 			border-radius: 1em;
+			z-index: var(--layer-top);
 			width: 2em;
 			height: 2em;
 			position: fixed;
@@ -490,6 +493,8 @@
 				
 			</div>
 		</article>
+
+		
 	</div>
 
 	<footer id='footer' class='flex-col'>
@@ -497,7 +502,7 @@
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
 	</footer>
 
-	<!-- <button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button> -->
+	<button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button>
 
 </div>
 
@@ -528,15 +533,14 @@
 	const eCTA = document.querySelector('#section-cta');
 	const eMain = document.querySelector('#main');
 	const eJumpToTop = document.querySelector('#jump-to-top');
-
+	
 	if (eCTA && eMain && eJumpToTop) {
 		eJumpToTop.onclick = evt => {
-			// document.querySelector('#navbar').scrollIntoView({ behavior: 'smooth' });
-			eMain.scroll({ top: 0, behavior: 'smooth' });
-			// TODO: focus() on top-level element
+			window.scroll({ top: 0, behavior: 'smooth' });
+			eMain.focus(); // refocus top-level nav for keyboard-only users
 		};
-		eMain.onscroll = evt => {
-			if (eMain.scrollTop > eCTA.scrollHeight) {
+		window.onscroll = evt => {
+			if (window.scrollY > eCTA.scrollHeight) {
 				eJumpToTop.classList.remove('hidden');
 			} else {
 				eJumpToTop.classList.add('hidden');
