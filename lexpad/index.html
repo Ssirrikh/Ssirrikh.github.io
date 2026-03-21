@@ -492,10 +492,10 @@
 		</article>
 	</div>
 
-	<!-- <footer id='footer' class='flex-col'>
+	<footer id='footer' class='flex-col'>
 		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 licence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
-	</footer> -->
+	</footer>
 
 	<!-- <button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button> -->
 
@@ -519,6 +519,9 @@
 		// force hidden in mobile mode, force visible in desktop mode
 		eNavMenu.style.display = (window.innerWidth/window.innerHeight > 5/4) ? '' : 'none';
 	});
+	// on mobile, nav shouldn't be open on page load
+	if (window.innerWidth/window.innerHeight < 5/4) eNavMenu.style.display= 'none';
+
 </script>
 
 <script type='text/javascript'>
