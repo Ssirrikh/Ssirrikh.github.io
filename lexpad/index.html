@@ -4,7 +4,7 @@
 	<meta charset = 'utf-8'>
 	<title>LexPad - Your Cross-Platform Lexicon Editor</title>
     <meta name='robots' content='index, follow'>
-    <meta name='description' content='Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary. All from one cross-platform tool.'>
+    <meta name='description' content='Build your lexicon in a clean, modern interface with built-in media support, automated consistency checks, and tools for generating online or print-ready dictionaries.'>
 	<meta name='viewport' content='width=device-width, initial-scale=1, interactive-widget=resizes-content'>
 	<!-- interactive-widget=resizes-content necessary for any page with text input, so page updates to accomodate onscreen keyboard -->
     <link rel='stylesheet' href='../common.css'>
@@ -15,6 +15,14 @@
 			--dark: #0d1117;
 			--bg-medium: #121921;
 			--bg-medium: #0d0f12;
+			--bg-medium-light: #1d1f22;
+			--bg-hover: #fff1;
+
+			/* vs code IDE */
+			--bg-medium: #181818;
+			--bg-medium-light: #1f1f1f;
+			--bg-medium-lighter: #434343;
+			/* --border-grey: #262626; */
 
 			--primary: #2950e5;
 			--primary: #6a4fff;
@@ -35,6 +43,7 @@
 
 			--warning: #d12a2a;
 
+			--navbar-height: 3em;
 			--content-min-width: 20em;
 			--content-cta-width: 30em;
 			--content-max-width: 40em;
@@ -46,10 +55,12 @@
 		body {
 			color: var(--text-light);
 			background-color: var(--gradient-dark);
-			overflow: hidden;
 		}
 		h1 {
 			font-size: 2em;
+		}
+		button {
+			color: var(--text-light);
 		}
 		a {
 			color: var(--text-primary);
@@ -69,52 +80,57 @@
 
 		
 
-		#main {
-			overflow: overlay;
-			background: linear-gradient(to bottom, var(--gradient-dark), var(--gradient-light));
-			background: linear-gradient(to bottom, var(--gradient-darker), var(--gradient-medium));
+		.fill-screen {
+			/* display: inline-block; */
+			width: 100%;
+			max-width: 100vw;
+			height: 100%;
+			max-height: 100vh;
+			position: fixed;
+			top: 0;
+			left: 0;
 		}
+
+
+		#bg {
+			background: linear-gradient(to bottom, var(--gradient-darker), var(--gradient-medium));
+			z-index: var(--layer-background);
+		}
+		#main {
+			/* border: thin solid red; */
+		}
+
+
 
 		/**** NAVBAR ****/
 
 		#navbar {
-			/* color: white; */
-			background-color: var(--dark);
 			background-color: var(--bg-medium);
 			border-bottom: thin solid var(--border-grey);
 			font-size: 1em;
+            height: var(--navbar-height);
 			padding: 0 0.5em;
-			gap: 1em;
+			position: relative;
+			/* gap: 1em; */
 		}
-		.nav-adaptive-wrapper {
-			background-color: #0003;
-			position: fixed;
-			top: 0;
-			left: 0;
-			z-index: var(--layer-overlay);
+		#navbar > button {
+			width: 2.7em;
+			height: 100%;
+			/* flex-centered by default */
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
-		#navbar ul {
-			list-style: none;
-			gap: 1em;
+		#navbar > button:hover {
+			background-color: var(--bg-medium-light);
 		}
-		#navbar ul > li {
-			padding: 1em 0.25em;
+		#navbar > button > svg {
+			border-radius: 0.5em;
+			width: 2em;
+			height: 2em;
 		}
-		#navbar ul > li:hover {
-			text-decoration: underline;
-		}
-		#navbar ul > li:focus-visible {
+		#navbar > button:focus-visible > svg {
 			outline: medium solid white;
-		}
-		#navbar ul > li.active {
-			box-shadow: inset 0 3px 0 0 var(--text-primary) !important;
-		}
-		#navbar ul > li.active:hover {
-			cursor: default;
-			text-decoration: none;
-		}
-		#navbar ul > li > a {
-			color: var(--text-light);
 		}
 
 		#nav-icon {
@@ -125,30 +141,103 @@
 			height: 2em;
 			/* M 1 1 L 1 18 Q 1 23 6 23 L 23 23 L 23 6 Q 23 1 18 1 Z */
 		}
-		#nav-github {
-			border-radius: 0.5em;
-			width: 2em;
-			height: 2em;
+
+		#nav-adaptive-wrapper {
+			/* border: thin solid yellow; */
+			background-color: #0008;
+
+			width: 100%;
+			height: calc(100vh - var(--navbar-height)); /*  fallback for legacy browsers w/o dynamic viewport units */
+			height: calc(100dvh - var(--navbar-height));
+			position: absolute;
+			top: 100%;
+			left: 0;
 		}
-		#nav-github:hover {
-			filter: drop-shadow(0 0 8px #fff8);
+		#nav-adaptive-wrapper ul {
+			background-color: var(--bg-medium);
+			border-top: thin solid var(--border-grey);
+			border-bottom: thin solid var(--border-grey);
+			padding: 0.5em 2em;
+			width: 100%;
+			list-style: none;
 		}
-		#nav-github:focus-visible {
+		#nav-adaptive-wrapper ul > li {
+			width: 100%;
+		}
+		#nav-adaptive-wrapper ul > li:hover {
+			background-color: var(--bg-medium-light);
+			box-shadow: inset 3px 0 0 0 var(--border-grey);
+		}
+		#nav-adaptive-wrapper ul > li:focus-visible {
 			outline: medium solid white;
 		}
+		#nav-adaptive-wrapper ul > li.active {
+			background-color: var(--bg-medium-light) !important;
+			box-shadow: inset 3px 0 0 0 var(--text-primary) !important;
+		}
+		#nav-adaptive-wrapper ul > li > a {
+			color: var(--text-light);
+			border: medium solid transparent;
+			width: 100%;
+			height: 100%;
+			padding: 0.5em 1em;
+			text-align: center;
+			text-decoration: none;
+			/* flex-centered text */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#nav-adaptive-wrapper ul > li > a:focus-visible {
+			border: medium solid var(--text-light);
+			outline: none;
+		}
+
+		#nav-close {
+			padding-top: 2em;
+			flex-grow: 1;
+		}
+		#nav-close > button {
+			--w: 2.5em;
+			background-color: var(--bg-medium);
+			border: thin solid var(--border-grey);
+			border-radius: 100%;
+			width: var(--w);
+			height: var(--w);
+		}
+		#nav-close > button:hover {
+			background-color: var(--bg-medium-lighter);
+			border: thin solid var(--text-light);
+		}
+		#nav-close > button:focus-visible {
+			outline: medium solid var(--text-light);
+		}
+
+
 
 		/**** CONTENT ****/
+
+		.section {
+			padding: 1em;
+		}
+		.section-dark {
+			background-color: var(--bg-medium);
+			border-top: thin solid var(--gradient-light);
+		}
 
 		#section-cta {
 			/* border: thin solid red; */
 			padding: 1em;
 			min-width: var(--content-min-width);
 			max-width: var(--content-cta-width);
-			min-height: 20em;
 			height: calc(100vh - 8em);
+			min-height: 20em;
 			gap: 2em;
 			align-self: center;
 			text-align: center;
+		}
+		#section-cta > p {
+			line-height: 1.5em;
 		}
 
 		.download-options {
@@ -167,20 +256,17 @@
 			justify-content: center;
 		}
 		.download-button:hover {
-			background-color: var(--primary-selection);
+			background-color: var(--gradient-light);
 		}
 		.download-button:focus-visible {
 			border: medium solid var(--gradient-medium);
 			outline: medium solid white;
 		}
 
-		.section {
-			padding: 1em;
+		#latest-version {
+			color: var(--text-darkened);
 		}
-		.section-dark {
-			background-color: var(--bg-medium);
-			border-top: thin solid var(--gradient-light);
-		}
+
 		.section-content-wrapper {
 			/* border: thin solid red; */
 			min-width: var(--content-min-width);
@@ -226,42 +312,10 @@
 			/* min-height: 16em; */
 		}
 
-		#latest-version {
-			color: var(--text-darkened);
-		}
-
-		
-
 		/* FOOTER */
 
-		#install-warning {
-			background-color: var(--dark);
-			background-color: var(--bg-medium);
-			border: thin solid var(--gradient-light);
-			border-bottom: none;
-			/* border-radius: 0.5em; */
-			border-radius: 0.25em 0.25em 0 0;
-			margin: 0 1em;
-			/* margin-bottom: 0; */
-			padding: 0.5em;
-			font-size: 1em;
-			font-size: 0.8em;
-			max-width: 30em;
-			text-align: center;
-
-			align-self: center;
-			/* align-self: flex-end; */
-		}
-		#install-warning a {
-			color: inherit;
-			color: var(--text-darkened);
-		}
-
 		#footer {
-			/* color: white; */
 			color: var(--text-darkened);
-			background-color: var(--primary);
-			background-color: var(--gradient-dark);
 			background-color: var(--dark);
 			border-top: thin solid var(--gradient-light);
 			padding: 0.25em 1em;
@@ -298,37 +352,84 @@
 		#jump-to-top:focus-visible {
 			outline: medium solid white;
 		}
+		
+		
+
+		/* ////////////////////////// */
+
+		@media (min-aspect-ratio: 5/4) { /* desktop mode */
+			#nav-adaptive-wrapper {
+				background-color: transparent;
+
+				width: fit-content;
+				height: 100%;
+				position: static;
+				top: 100%;
+				left: 0;
+			}
+			#nav-adaptive-wrapper ul {
+				border: none;
+				padding: 0 2em;
+			}
+			#nav-adaptive-wrapper ul > li {
+				width: fit-content;
+			}
+
+			#nav-adaptive-wrapper ul > li:hover {
+				box-shadow: inset 0 -3px 0 0 var(--border-grey);
+			}
+			#nav-adaptive-wrapper ul > li.active {
+				box-shadow: inset 0 -3px 0 0 var(--text-primary) !important;
+			}
+		}
 
 		
 	</style>
 </head>
 <body>
 
+<div id='bg' class='fill-screen'></div>
+
 <div id='main' class='flex-col'>
 	<nav id='navbar' class='flex-row' role='navigation' aria-label='Top Level'>
 		<div id='nav-icon' class='flex-centered' aria-label='LexPad'>
 			<p aria-hidden='true'>L</p>
 		</div>
-		<!-- <div class='nav-adaptive-wrapper'> -->
-			<ul class='flex-row'>
+		<div id='nav-adaptive-wrapper' class='flex-adapt'>
+			<ul class='flex-adapt'>
 				<li class='active'><a>Home</a></li>
 				<li><a href='./documentation'>Documentation</a></li>
 				<li><a href='./getting-started'>Getting Started</a></li>
 			</ul>
-		<!-- </div> -->
+			<div id='nav-close' class='flex-col mobile-only'>
+				<button class='flex-centered' aria-label='Close menu'>
+					<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' width='24' height='24' stroke-width='1.5'>
+						<path d='M4 4l16 16'></path>
+						<path d='M20 4l-16 16'></path>
+					</svg>
+				</button>
+			</div>
+		</div>
 		<div class='flex-sep'></div>
-		<button id='nav-github' class='flex-centered' title='Visit project on GitHub'>
+		<button id='nav-github' class='flex-centered' title='Visit LexPad on GitHub'>
 			<!-- octocat logo from Github @ https://github.com/ -->
 			<svg width='100%' height='100%' viewBox='0 0 24 24' fill='white'>
     			<path d='M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z'></path>
 			</svg>
+		</button>
+		<button id='nav-menu-target' class='mobile-only' title='Expand and collapse menu' aria-expanded='false'>
+			<svg id='nav-hamburger' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' width='24' height='24' stroke-width='1.5'>
+                <path d='M5 8l14 0'></path>
+                <path d='M5 12l14 0'></path>
+                <path d='M5 16l14 0'></path>
+            </svg>
 		</button>
 	</nav>
 
 	<div id='section-cta' class='flex-col flex-centered flex-fill no-scrollbar'>
 		<h1>Welcome to LexPad</h1>
 		
-		<p>Build your lexicon in a clean, modern interface with built-in media support. Use automated tools to catch and correct errors, then export a print-ready dictionary. <span class='no-wrap'>All from one cross-platform tool.</span></p>
+		<p>Build your lexicon in a clean, modern interface with built-in media support, automated consistency checks, and tools for generating online or print-ready dictionaries.</p>
 
 		<div class='flex-adapt download-options'>
 			<button class='flex-row download-button' title='Download LexPad for Windows'>
@@ -390,32 +491,55 @@
 			</div>
 		</article>
 	</div>
-	
-	<footer id='footer' class='flex-col'>
+
+	<!-- <footer id='footer' class='flex-col'>
 		<p>This software is free and open source under the <a href='https://choosealicense.com/licenses/gpl-3.0/'><span class='no-wrap'>GPL 3 licence</span></a>.</p>
 		<p>&copy; <span id='current-year'>2026</span> Narayana "Kat" Adisasmito-Smith</p>
-	</footer>
+	</footer> -->
 
-	<button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button>
+	<!-- <button id='jump-to-top' class='flex-centered hidden' title='Back to top'></button> -->
+
 </div>
+
+<script type='text/javascript'>
+	const eNavMenu = document.querySelector('#nav-adaptive-wrapper');
+	const eNavTarget = document.querySelector('#nav-menu-target');
+
+	eNavMenu.onclick = (evt) => {
+		if (!document.querySelector('#nav-adaptive-wrapper > ul').contains(evt.target)) {
+			eNavMenu.style.display = 'none';
+		}
+	};
+	eNavTarget.onclick = (evt) => {
+		console.log(eNavMenu.style.display);
+		eNavMenu.style.display = (eNavMenu.style.display === 'none') ? '' : 'none';
+	};
+
+	window.addEventListener('resize', evt => {
+		// force hidden in mobile mode, force visible in desktop mode
+		eNavMenu.style.display = (window.innerWidth/window.innerHeight > 5/4) ? '' : 'none';
+	});
+</script>
 
 <script type='text/javascript'>
 	const eCTA = document.querySelector('#section-cta');
 	const eMain = document.querySelector('#main');
 	const eJumpToTop = document.querySelector('#jump-to-top');
 
-	eJumpToTop.onclick = evt => {
-		// document.querySelector('#navbar').scrollIntoView({ behavior: 'smooth' });
-		eMain.scroll({ top: 0, behavior: 'smooth' });
-		// TODO: focus() on top-level element
-	};
-	eMain.onscroll = evt => {
-		if (eMain.scrollTop > eCTA.scrollHeight) {
-			eJumpToTop.classList.remove('hidden');
-		} else {
-			eJumpToTop.classList.add('hidden');
-		}
-	};
+	if (eCTA && eMain && eJumpToTop) {
+		eJumpToTop.onclick = evt => {
+			// document.querySelector('#navbar').scrollIntoView({ behavior: 'smooth' });
+			eMain.scroll({ top: 0, behavior: 'smooth' });
+			// TODO: focus() on top-level element
+		};
+		eMain.onscroll = evt => {
+			if (eMain.scrollTop > eCTA.scrollHeight) {
+				eJumpToTop.classList.remove('hidden');
+			} else {
+				eJumpToTop.classList.add('hidden');
+			}
+		};
+	}
 </script>
 
 </body>

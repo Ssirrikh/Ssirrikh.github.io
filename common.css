@@ -137,10 +137,10 @@ input,textarea,select {
 
 #main {
     /* border: thin solid red; */
-    position: fixed;
+    /* position: fixed;
     inset: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100vh; */
     /* overflow: hidden; */
 }
 #progress {
@@ -176,12 +176,12 @@ input,textarea,select {
 @media (max-aspect-ratio: 5/4) { /* mobile mode */
     /* all styling is mobile-first, but if an element requires specific overrides, those go here */
     .desktop-only {
-        display: none;
+        display: none !important;
     }
 }
 @media (min-aspect-ratio: 5/4) { /* desktop mode */
-    :root {
-        /*  */
+    .mobile-only {
+        display: none !important;
     }
     .flex-adapt {
         display: flex;
