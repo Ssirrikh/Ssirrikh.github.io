@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = 'utf-8'>
+	<title>Online Abacus</title>
+    <meta name='robots' content='index, follow'>
+    <meta name='description' content='Use a digital abacus to learn one of the oldest forms of high-speed math. Includes both the 5+2 "Suanpan" for exchange counting and the 4+1 "Soroban" for complementary counting.'>
+	<meta name='viewport' content='width=device-width, initial-scale=1, interactive-widget=resizes-content'>
+	<!-- interactive-widget=resizes-content necessary for any page with text input, so page updates to accomodate onscreen keyboard -->
+    <link rel='stylesheet' href='./common.css'>
+	<style>
+		:root {
+			--abacus-bead-width: 2em;
+		}
+
+        #main {
+            border: thin solid red;
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            width: 100dvw;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+		/* ////////////////////////// */
+
+        .abacus-frame {
+            border: thick solid brown;
+        }
+        .abacus-lower {
+            /* border: thin solid blue; */
+            width: calc(5 * var(--abacus-bead-width));
+        }
+        .abacus-upper {
+            /* border: thin solid blue; */
+            border-left: thick solid brown;
+            width: calc(2 * var(--abacus-bead-width));
+        }
+        .abacus-row {
+            border: thin solid blue;
+            height: var(--abacus-bead-width);
+        }
+        .abacus-bead {
+            background-color: brown;
+            border-radius: 100%;
+            width: var(--abacus-bead-width);
+            height: var(--abacus-bead-width);
+        }
+
+		@media (min-aspect-ratio: 5/4) { /* desktop mode */
+			/*  */
+		}
+	</style>
+</head>
+<body>
+
+<div id='main' class='flex-col flex-centered'>
+    <div class='flex-row abacus-frame'>
+        <div class='flex-col abacus-lower'>
+            <div class='flex-row abacus-row'>
+                <div class='abacus-bead'></div>
+                <div class='abacus-bead'></div>
+                <div class='abacus-bead'></div>
+                <div class='abacus-bead'></div>
+            </div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+        </div>
+        <div class='flex-col abacus-upper'>
+            <div class='flex-row abacus-row'>
+                <div class='abacus-bead'></div>
+            </div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+            <div class='flex-row abacus-row'></div>
+        </div>
+    </div>
+</div>
+
+<script type='text/javascript'>
+    const UNIT_ABBRS = ['','k','m','b','t'];
+    const nearestPower = (n) => Math.ceil(Math.log10(n));
+
+	class SuanpanRow {
+        // 5+2 Suanpan abacus row
+        constructor () {
+            this.upper = 0; // int [0,2]
+            this.lower = 0; // int [0,5]
+        }
+        set value (n) {
+            return this.set(n);
+        }
+        get value () {
+            return 5*this.upper + this.lower;
+        }
+        reset () {
+            this.upper = 0;
+            this.lower = 0;
+        }
+        set (n) {
+            const rem = Math.trunc(n / 10);
+            const cur = parseInt(n % 10);
+            this.upper = Math.trunc(cur / 5);
+            this.lower = cur % 5;
+            // console.log(`${cur} -> ${this.upper} upper, ${this.lower} lower + ${rem}`);
+            return rem; // number of 10-beads to carry
+        }
+        add (n) {
+            const old = this.value;
+
+            const rem = Math.trunc(n / 10);
+            const cur = n % 10;
+            const total = this.value + cur;
+            const carry = this.set(cur);
+            console.log(`row ${old}, add ${n} -> row ${this.value}, carry ${carry} + remainder ${rem}`);
+            return rem;
+        }
+    }
+
+    class SorobanRow {
+        // 4+1 Soroban Abacus row
+        constructor () {
+            this._value = 0;
+        }
+        get upper () { return Math.trunc(this._value / 5); }
+        get lower () { return this._value % 5; }
+        get value () { return this._value; }
+        reset () {
+            this._value = 0;
+            return 0;
+        }
+        set (n) {
+            this._value = n % 10;
+            return Math.trunc(n / 10);
+        }
+        add (n) {
+            n += this._value;
+            this._value = n % 10;
+            return Math.trunc(n / 10);
+        }
+    }
+    class SorobanAbacus {
+        constructor (numRows = 13) {
+            this.rows = [];
+            for (let i = 0; i < numRows; i++) {
+                this.rows.push( new SorobanRow() );
+            }
+        }
+        get value () {
+            let total = 0;
+            for (let i = 0; i < this.rows.length; i++) {
+                total += Math.pow(10,i) * this.rows[i].value;
+            }
+            return total;
+        }
+        prettyPrint () {
+            for (let i = this.rows.length-1; i >= 0; i--) {
+                const labelLower = (i <= 3) ? `${1*Math.pow(10,i)}` : `10^${i}`;
+                const labelUpper = (i <= 3) ? `${5*Math.pow(10,i)}` : `5 * 10^${i}`;
+                console.log(`(${labelLower}) ${this.rows[i].lower}|${this.rows[i].upper} (${labelUpper})`);
+            }
+            console.log(`Total is ${this.value}`);
+        }
+        reset () {
+            for (let row of this.rows) {
+                row.reset();
+            }
+        }
+        set (n) {
+            this.reset();
+            // this.add(n);
+            for (let i = 0; i < this.rows.length; i++) {
+                const remainder = this.rows[i].add(n);
+                n = remainder;
+            }
+        }
+    }
+
+    class SorobanVisualizer {
+        constructor (abacus) {
+            this.abacus = abacus || new SorobanAbacus();
+            // this.frame = ;
+            // this.rows = [];
+        }
+        render () {}
+    }
+
+    // let row = new SuanpanRow();
+    // for (let i = 0; i < 12; i++) {
+    //     row.add(i);
+    //     // TODO: ERROR, addition is wrong
+    //     // row.value = i;
+    // }
+
+    // let row = new SorobanRow();
+    // for (let i = 0; i < 12; i++) {
+    //     const remainder = row.set(i);
+    //     console.log(`set ${i} -> ${row.upper}|${row.lower}, remainder ${remainder}`);
+    // }
+    // row.reset();
+    // for (let i = 0; i < 12; i++) {
+    //     const upper = row.upper;
+    //     const lower = row.lower;
+    //     const remainder = row.add(i);
+    //     console.log(`from ${upper}|${lower}, add ${i} -> ${row.upper}|${row.lower}, remainder ${remainder}`);
+    // }
+
+    let soroban = new SorobanAbacus();
+    soroban.set(1265);
+    soroban.prettyPrint();
+
+</script>
+
+</body>
+</html>
