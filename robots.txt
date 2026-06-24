@@ -2,4 +2,4 @@
 # Only include Wikchamni dictionary content in sitemap
 User-agent: *
 Disallow: 
-Sitemap: https://ssirrikh.github.io/wikchamni/sitemap-wikchamni.txt
+Sitemap: https://ssirrikh.github.io/wikchamni/sitemap-wikchamni.xml
